@@ -8,9 +8,7 @@
 package com.lovelycatv.relink.ir.workflow.node.port
 
 import com.lovelycatv.relink.ir.PortLabel
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class ExecPort(
     override val label: PortLabel
 ) : INodePort

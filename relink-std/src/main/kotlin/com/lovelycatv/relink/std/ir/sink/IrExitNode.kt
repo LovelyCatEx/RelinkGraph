@@ -12,9 +12,7 @@ import com.lovelycatv.relink.ir.workflow.node.IrSinkNode
 import com.lovelycatv.relink.ir.workflow.node.port.ExecPort
 import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
 import com.lovelycatv.relink.std.ir.StdNodeType
-import kotlinx.serialization.Serializable
 
-@Serializable
 class IrExitNode(
     nodeId: NodeId,
     inputs: List<ParamPort>,

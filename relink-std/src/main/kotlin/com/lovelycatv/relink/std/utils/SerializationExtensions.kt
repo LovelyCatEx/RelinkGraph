@@ -7,18 +7,15 @@
  */
 package com.lovelycatv.relink.std.utils
 
-import kotlinx.serialization.json.Json
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
-val DefaultJson = Json {
-    encodeDefaults = true
-    ignoreUnknownKeys = true
-    explicitNulls = false
+val DefaultObjectMapper = jacksonObjectMapper()
+
+inline fun <reified T> T.toJSONString(json: ObjectMapper = DefaultObjectMapper): String {
+    return json.writeValueAsString(this)
 }
 
-inline fun <reified T> T.toJSONString(json: Json = DefaultJson): String {
-    return json.encodeToString(this)
-}
-
-inline fun <reified T> String.parseObject(json: Json = DefaultJson): T {
-    return json.decodeFromString(this)
+inline fun <reified T> String.parseObject(json: ObjectMapper = DefaultObjectMapper): T {
+    return json.readValue<T>(this, T::class.java)
 }

@@ -10,14 +10,11 @@ package com.lovelycatv.relink.ir.workflow.node
 import com.lovelycatv.relink.ir.NodeId
 import com.lovelycatv.relink.ir.workflow.node.port.ExecPort
 import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
-import kotlinx.serialization.Serializable
 
-@Serializable
 open class IrControlNode(
     nodeId: NodeId,
     nodeType: INodeType,
     execInputs: List<ExecPort>,
     execOutputs: List<ExecPort>,
-    inputs: List<ParamPort>,
-    outputs: List<ParamPort>
-) : IrBaseNode(nodeId, NodeRole.CONTROL, nodeType, execInputs, execOutputs, inputs, outputs)
+    inputs: List<ParamPort>
+) : IrBaseNode(nodeId, NodeRole.CONTROL, nodeType, execInputs, execOutputs, inputs, listOf())

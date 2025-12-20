@@ -8,9 +8,7 @@
 package com.lovelycatv.relink.ir
 
 import com.lovelycatv.relink.ir.workflow.IrWorkflow
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class IrRelinkGraph(
     val graphName: String,
     val workflows: List<IrWorkflow>

@@ -9,9 +9,7 @@ package com.lovelycatv.relink.ir.workflow.node
 
 import com.lovelycatv.relink.ir.NodeId
 import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
-import kotlinx.serialization.Serializable
 
-@Serializable
 open class IrPureNode(
     nodeId: NodeId,
     nodeType: INodeType,

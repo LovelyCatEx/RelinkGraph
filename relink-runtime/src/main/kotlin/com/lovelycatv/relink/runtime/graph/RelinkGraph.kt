@@ -9,18 +9,17 @@ package com.lovelycatv.relink.runtime.graph
 
 import com.lovelycatv.relink.ir.IrRelinkGraph
 import com.lovelycatv.relink.ir.PortLabel
+import com.lovelycatv.relink.ir.workflow.node.INodeType
 import com.lovelycatv.relink.runtime.workflow.Workflow
 import com.lovelycatv.relink.runtime.workflow.WorkflowExecutionListener
 import com.lovelycatv.relink.std.runtime.graph.RelinkGraphStd
 import com.lovelycatv.relink.std.runtime.type.RuntimeValue
 
 class RelinkGraph(
-    ir: IrRelinkGraph
-) : RelinkGraphStd(ir) {
-    private val workflows: MutableMap<String, Workflow> = this.ir.workflows
-        .associateBy { it.workflowName }
-        .mapValues { Workflow(it.value, GraphContext(executors)) }
-        .toMutableMap()
+    ir: IrRelinkGraph,
+    nodeTypeRegistry: Map<String, INodeType>
+) : RelinkGraphStd(ir, nodeTypeRegistry) {
+    private val workflows: MutableMap<String, Workflow> = this.buildWorkflows(super.ir)
 
     fun executeWorkflowAsync(
         workflowName: String,
@@ -40,5 +39,23 @@ class RelinkGraph(
 
     fun getWorkflowByName(name: String): Workflow {
         return this.workflows[name] ?: throw NullPointerException("No workflow found with name $name")
+    }
+
+    override fun internalLoadFromIRSerialization(jsonString: String): IrRelinkGraph {
+        val ir = super.internalLoadFromIRSerialization(jsonString)
+
+        // Re-build workflows
+        this.workflows.clear()
+
+        workflows.putAll(this.buildWorkflows(ir))
+
+        return ir
+    }
+
+    private fun buildWorkflows(ir: IrRelinkGraph): MutableMap<String, Workflow> {
+        return ir.workflows
+            .associateBy { it.workflowName }
+            .mapValues { Workflow(it.value, GraphContext(executors)) }
+            .toMutableMap()
     }
 }

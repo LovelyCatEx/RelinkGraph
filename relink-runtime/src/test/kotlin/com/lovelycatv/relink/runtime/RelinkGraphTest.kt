@@ -92,7 +92,8 @@ class RelinkGraphTest {
                 makeConnection(nodeIf.nodeId, IrIfNode.EXEC_OUTPUT_TRUE, exit1.nodeId, IrExitNode.EXEC_INPUT)
                 makeConnection(nodeIf.nodeId, IrIfNode.EXEC_OUTPUT_FALSE, exit2.nodeId, IrExitNode.EXEC_INPUT)
             }
-            .build()
+            .build(),
+        emptyMap()
     )
 
     @Test

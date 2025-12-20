@@ -9,9 +9,7 @@ package com.lovelycatv.relink.ir.workflow.node.port
 
 import com.lovelycatv.relink.ir.PortLabel
 import com.lovelycatv.relink.ir.type.RType
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class ParamPort(
     val type: RType,
     override val label: PortLabel

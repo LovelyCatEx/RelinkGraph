@@ -9,9 +9,7 @@ package com.lovelycatv.relink.ir.workflow.edge
 
 import com.lovelycatv.relink.ir.NodeId
 import com.lovelycatv.relink.ir.PortLabel
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class IrPortEdge(
     val from: NodeId,
     val fromPort: PortLabel,

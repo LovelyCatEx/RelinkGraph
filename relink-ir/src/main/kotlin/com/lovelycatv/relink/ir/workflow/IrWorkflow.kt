@@ -13,9 +13,7 @@ import com.lovelycatv.relink.ir.workflow.edge.IrPortEdge
 import com.lovelycatv.relink.ir.workflow.node.IrBaseNode
 import com.lovelycatv.relink.ir.workflow.node.port.ExecPort
 import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class IrWorkflow(
     val workflowName: String,
     val nodes: List<IrBaseNode>,

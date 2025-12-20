@@ -21,9 +21,14 @@ import com.lovelycatv.relink.std.runtime.executor.math.AddExecutor
 import com.lovelycatv.relink.std.runtime.executor.math.DivExecutor
 import com.lovelycatv.relink.std.runtime.executor.math.MulExecutor
 import com.lovelycatv.relink.std.runtime.executor.math.SubExecutor
+import com.lovelycatv.relink.std.utils.parseObject
 
 open class RelinkGraphStd(
-    val ir: IrRelinkGraph
+    ir: IrRelinkGraph,
+    nodeTypeRegistry: Map<String, INodeType>
+) : AbstractSerializableRelinkGraphStd(
+    ir = ir,
+    nodeTypeRegistry = nodeTypeRegistry + StdNodeType.entries.associateBy { it.getTypeName() }
 ) {
     protected val executors = ExecutorBindingRegistryStd()
 
@@ -46,5 +51,9 @@ open class RelinkGraphStd(
 
     fun <N : IrBaseNode> registerExecutor(type: INodeType, executor: NodeExecutor<N>) {
         this.executors.bind(type, executor)
+    }
+
+    override fun internalLoadFromIRSerialization(jsonString: String): IrRelinkGraph {
+        return jsonString.parseObject<IrRelinkGraph>(super.objectMapper)
     }
 }

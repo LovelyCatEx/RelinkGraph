@@ -12,9 +12,7 @@ import com.lovelycatv.relink.ir.type.ConstValue
 import com.lovelycatv.relink.ir.workflow.node.IrSourceNode
 import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
 import com.lovelycatv.relink.std.ir.StdNodeType
-import kotlinx.serialization.Serializable
 
-@Serializable
 class IrConstantNode(
     nodeId: NodeId,
     val constValue: ConstValue

@@ -20,7 +20,7 @@
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
         <kotlin.version>2.2.20</kotlin.version>
         <kotlin.coroutines.version>1.10.2</kotlin.coroutines.version>
-        <serialization.version>1.9.0</serialization.version>
+        <serialization.version>2.17.2</serialization.version>
     </properties>
 
     <repositories>
@@ -68,8 +68,14 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jetbrains.kotlinx</groupId>
-            <artifactId>kotlinx-serialization-json</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${serialization.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
             <version>${serialization.version}</version>
         </dependency>
 

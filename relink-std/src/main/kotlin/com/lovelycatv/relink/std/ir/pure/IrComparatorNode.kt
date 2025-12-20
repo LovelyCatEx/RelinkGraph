@@ -13,9 +13,7 @@ import com.lovelycatv.relink.ir.type.RComparable
 import com.lovelycatv.relink.ir.workflow.node.IrPureNode
 import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
 import com.lovelycatv.relink.std.ir.StdNodeType
-import kotlinx.serialization.Serializable
 
-@Serializable
 class IrComparatorNode(
     nodeId: NodeId,
     val operandType: RComparable

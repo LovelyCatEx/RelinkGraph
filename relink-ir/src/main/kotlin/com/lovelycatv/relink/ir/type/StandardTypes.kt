@@ -7,6 +7,18 @@
  */
 package com.lovelycatv.relink.ir.type
 
+val IR_STD_TYPES = listOf(
+    RChar,
+    RByte,
+    RShort,
+    RInt,
+    RLong,
+    RFloat,
+    RDouble,
+    RBoolean,
+    RString
+)
+
 object RString : RCharSequence() {
     override val simpleName = "String"
     override val qualifiedName: String = this.simpleName

@@ -13,9 +13,7 @@ import com.lovelycatv.relink.ir.workflow.node.IrControlNode
 import com.lovelycatv.relink.ir.workflow.node.port.ExecPort
 import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
 import com.lovelycatv.relink.std.ir.StdNodeType
-import kotlinx.serialization.Serializable
 
-@Serializable
 class IrIfNode(
     nodeId: NodeId
 ) : IrControlNode(
@@ -23,8 +21,7 @@ class IrIfNode(
     StdNodeType.IF,
     listOf(ExecPort(EXEC_INPUT)),
     listOf(ExecPort(EXEC_OUTPUT_TRUE), ExecPort(EXEC_OUTPUT_FALSE)),
-    listOf(ParamPort(RBoolean, INPUT_CONDITION)),
-    listOf()
+    listOf(ParamPort(RBoolean, INPUT_CONDITION))
 ) {
     companion object {
         const val EXEC_INPUT = "exec"

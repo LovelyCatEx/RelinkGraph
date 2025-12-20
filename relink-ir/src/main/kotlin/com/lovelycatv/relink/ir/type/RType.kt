@@ -13,6 +13,18 @@ sealed class RType {
 
     abstract fun isAssignableFrom(other: RType): Boolean
 
+    companion object {
+        private val types = mutableMapOf<String, RType>()
+
+        fun forName(name: String): RType {
+            return this.types[name] ?: throw NullPointerException("RType $name not found")
+        }
+
+        fun registerType(type: RType) {
+            this.types[type.qualifiedName] = type
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         return other is RType && this.qualifiedName == other.qualifiedName
     }
