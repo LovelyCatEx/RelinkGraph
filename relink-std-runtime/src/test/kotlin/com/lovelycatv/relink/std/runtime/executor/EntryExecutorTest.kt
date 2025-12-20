@@ -1,0 +1,61 @@
+/*
+ * Copyright 2025 lovelycat
+ *
+ * Use of this source code is governed by the Apache License, Version 2.0,
+ * that can be found in the LICENSE file.
+ *
+ */
+package com.lovelycatv.relink.std.runtime.executor
+
+import com.lovelycatv.relink.std.ir.source.IrEntryNode
+import com.lovelycatv.relink.std.ir.type.RInt
+import com.lovelycatv.relink.std.ir.workflow.node.port.ParamPort
+import com.lovelycatv.relink.std.runtime.intValue
+import com.lovelycatv.relink.std.runtime.type.IntValue
+import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+
+class EntryExecutorTest {
+    @Test
+    fun execute() {
+        val node = IrEntryNode("entry", listOf(ParamPort(RInt, "x")))
+
+        val result1 = runBlocking {
+            EntryExecutor.execute(
+                node,
+                mapOf("x" to IntValue(1))
+            )["x"]!!
+        }
+
+        assertEquals(1, result1.intValue())
+
+        val result2 = runBlocking {
+            EntryExecutor.execute(
+                node,
+                mapOf("x" to IntValue(-1))
+            )["x"]!!
+        }
+
+        assertEquals(-1, result2.intValue())
+
+        val result3 = runBlocking {
+            EntryExecutor.execute(
+                node,
+                mapOf("x" to IntValue(0))
+            )["x"]!!
+        }
+
+        assertEquals(0, result3.intValue())
+
+        val result4 = runBlocking {
+            EntryExecutor.execute(
+                node,
+                mapOf("x" to IntValue(42))
+            )["x"]!!
+        }
+
+        assertEquals(42, result4.intValue())
+    }
+}
+

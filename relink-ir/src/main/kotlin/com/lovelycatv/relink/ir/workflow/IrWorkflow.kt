@@ -5,14 +5,14 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.ir.workflow
+package com.lovelycatv.relink.std.ir.workflow
 
-import com.lovelycatv.relink.ir.NodeId
-import com.lovelycatv.relink.ir.PortLabel
-import com.lovelycatv.relink.ir.workflow.edge.IrPortEdge
-import com.lovelycatv.relink.ir.workflow.node.IrBaseNode
-import com.lovelycatv.relink.ir.workflow.node.port.ExecPort
-import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
+import com.lovelycatv.relink.std.ir.NodeId
+import com.lovelycatv.relink.std.ir.PortLabel
+import com.lovelycatv.relink.std.ir.workflow.edge.IrPortEdge
+import com.lovelycatv.relink.std.ir.workflow.node.IrBaseNode
+import com.lovelycatv.relink.std.ir.workflow.node.port.ExecPort
+import com.lovelycatv.relink.std.ir.workflow.node.port.ParamPort
 
 data class IrWorkflow(
     val workflowName: String,

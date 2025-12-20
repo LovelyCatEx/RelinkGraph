@@ -5,7 +5,7 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.ir
+package com.lovelycatv.relink.std.ir
 
 typealias NodeId = String
 typealias PortLabel = String

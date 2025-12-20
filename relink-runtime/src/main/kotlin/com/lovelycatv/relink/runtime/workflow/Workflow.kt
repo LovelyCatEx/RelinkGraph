@@ -7,18 +7,17 @@
  */
 package com.lovelycatv.relink.runtime.workflow
 
-import com.lovelycatv.relink.ir.NodeId
-import com.lovelycatv.relink.ir.PortLabel
-import com.lovelycatv.relink.ir.workflow.IrWorkflow
-import com.lovelycatv.relink.ir.workflow.node.IrBaseNode
-import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
 import com.lovelycatv.relink.runtime.graph.EdgeQueryResult
 import com.lovelycatv.relink.runtime.graph.GraphContext
-import com.lovelycatv.relink.std.ir.sink.IrExitNode
+import com.lovelycatv.relink.std.ir.NodeId
+import com.lovelycatv.relink.std.ir.PortLabel
 import com.lovelycatv.relink.std.ir.source.IrEntryNode
+import com.lovelycatv.relink.std.ir.workflow.IrWorkflow
+import com.lovelycatv.relink.std.ir.workflow.node.IrBaseNode
+import com.lovelycatv.relink.std.ir.workflow.node.port.ParamPort
 import com.lovelycatv.relink.std.runtime.type.InferredRType
 import com.lovelycatv.relink.std.runtime.type.RuntimeValue
-import com.lovelycatv.relink.std.utils.UUID
+import com.lovelycatv.relink.std.runtime.utils.UUID
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
@@ -108,7 +107,7 @@ class Workflow(
     }
 
     fun inferReturnValueTypes(): List<InferredRType> {
-        val nodeInputs = this.ir.nodes.filterIsInstance<IrExitNode>().map { it.inputs }
+        val nodeInputs = this.ir.nodes.filterIsInstance<com.lovelycatv.relink.std.ir.sink.IrExitNode>().map { it.inputs }
 
         val exitCount = nodeInputs.size
 

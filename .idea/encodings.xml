@@ -5,8 +5,10 @@
     <file url="file://$PROJECT_DIR$/relink-ir/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/relink-runtime/src/main/kotlin" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/relink-runtime/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/relink-std/src/main/kotlin" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/relink-std/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/relink-std-ir/src/main/kotlin" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/relink-std-ir/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/relink-std-runtime/src/main/kotlin" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/relink-std-runtime/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/kotlin" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>

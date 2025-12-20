@@ -5,7 +5,7 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.ir.type
+package com.lovelycatv.relink.std.ir.type
 
 sealed interface ConstValue {
     val type: RType

@@ -5,11 +5,11 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.ir
+package com.lovelycatv.relink.std.ir
 
-import com.lovelycatv.relink.ir.type.RType
-import com.lovelycatv.relink.ir.workflow.node.port.INodePort
-import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
+import com.lovelycatv.relink.std.ir.type.RType
+import com.lovelycatv.relink.std.ir.workflow.node.port.INodePort
+import com.lovelycatv.relink.std.ir.workflow.node.port.ParamPort
 
 fun <P : INodePort> Iterable<P>.findByLabel(label: PortLabel): P? {
     return this.find { it.label == label }

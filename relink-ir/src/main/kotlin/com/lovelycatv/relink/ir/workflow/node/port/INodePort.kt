@@ -5,9 +5,9 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.ir.workflow.node.port
+package com.lovelycatv.relink.std.ir.workflow.node.port
 
-import com.lovelycatv.relink.ir.PortLabel
+import com.lovelycatv.relink.std.ir.PortLabel
 
 interface INodePort {
     val label: PortLabel

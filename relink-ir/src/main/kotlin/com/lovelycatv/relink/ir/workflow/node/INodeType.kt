@@ -5,7 +5,7 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.ir.workflow.node
+package com.lovelycatv.relink.std.ir.workflow.node
 
 interface INodeType {
     fun getTypeName(): String
