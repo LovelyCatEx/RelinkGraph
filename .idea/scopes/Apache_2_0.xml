@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Apache-2.0" pattern="src[relink-ir]:*..*" />
+</component>
