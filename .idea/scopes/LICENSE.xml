@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="LICENSE" pattern="src[relink-ir]:*..*||src[relink-runtime]:*..*||src[relink-std-ir]:*..*||src[relink-std-runtime]:*..*" />
+</component>
