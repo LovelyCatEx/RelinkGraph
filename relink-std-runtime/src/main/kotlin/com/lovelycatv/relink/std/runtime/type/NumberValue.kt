@@ -7,6 +7,6 @@
  */
 package com.lovelycatv.relink.std.runtime.type
 
-import com.lovelycatv.relink.std.ir.type.RComparable
+import com.lovelycatv.relink.ir.type.RComparable
 
 abstract class NumberValue(type: RComparable) : ComparableValue(type)

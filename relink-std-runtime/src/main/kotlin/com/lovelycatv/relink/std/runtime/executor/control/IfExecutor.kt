@@ -7,7 +7,7 @@
  */
 package com.lovelycatv.relink.std.runtime.executor.control
 
-import com.lovelycatv.relink.std.ir.PortLabel
+import com.lovelycatv.relink.ir.PortLabel
 import com.lovelycatv.relink.std.ir.control.IrIfNode
 import com.lovelycatv.relink.std.runtime.booleanValue
 import com.lovelycatv.relink.std.runtime.executor.NodeExecutor

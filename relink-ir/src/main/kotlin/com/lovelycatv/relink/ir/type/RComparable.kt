@@ -5,7 +5,7 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.std.ir.type
+package com.lovelycatv.relink.ir.type
 
 abstract class RComparable() : RType() {
     abstract fun isComparableTo(other: RComparable): Boolean

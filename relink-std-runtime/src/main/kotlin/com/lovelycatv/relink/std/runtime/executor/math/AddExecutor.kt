@@ -7,9 +7,9 @@
  */
 package com.lovelycatv.relink.std.runtime.executor.math
 
-import com.lovelycatv.relink.std.ir.PortLabel
+import com.lovelycatv.relink.ir.PortLabel
 import com.lovelycatv.relink.std.ir.pure.IrAddNode
-import com.lovelycatv.relink.std.ir.type.*
+import com.lovelycatv.relink.ir.type.*
 import com.lovelycatv.relink.std.runtime.*
 import com.lovelycatv.relink.std.runtime.executor.NodeExecutor
 import com.lovelycatv.relink.std.runtime.type.*

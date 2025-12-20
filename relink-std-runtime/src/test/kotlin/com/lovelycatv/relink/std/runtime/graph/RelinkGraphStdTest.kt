@@ -7,7 +7,7 @@
  */
 package com.lovelycatv.relink.std.runtime.graph
 
-import com.lovelycatv.relink.std.ir.IrRelinkGraph
+import com.lovelycatv.relink.ir.IrRelinkGraph
 import com.lovelycatv.relink.std.ir.control.IrIfNode
 import com.lovelycatv.relink.std.ir.pure.IrAddNode
 import com.lovelycatv.relink.std.ir.pure.IrComparatorNode
@@ -16,9 +16,9 @@ import com.lovelycatv.relink.std.ir.pure.IrMulNode
 import com.lovelycatv.relink.std.ir.sink.IrExitNode
 import com.lovelycatv.relink.std.ir.source.IrConstantNode
 import com.lovelycatv.relink.std.ir.source.IrEntryNode
-import com.lovelycatv.relink.std.ir.type.ConstInt
-import com.lovelycatv.relink.std.ir.type.RInt
-import com.lovelycatv.relink.std.ir.workflow.node.port.ParamPort
+import com.lovelycatv.relink.ir.type.ConstInt
+import com.lovelycatv.relink.ir.type.RInt
+import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
 import org.junit.jupiter.api.Test
 
 class RelinkGraphStdTest {

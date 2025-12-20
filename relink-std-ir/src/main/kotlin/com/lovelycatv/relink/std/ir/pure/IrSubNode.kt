@@ -7,11 +7,11 @@
  */
 package com.lovelycatv.relink.std.ir.pure
 
-import com.lovelycatv.relink.std.ir.NodeId
+import com.lovelycatv.relink.ir.NodeId
 import com.lovelycatv.relink.std.ir.StdNodeType
-import com.lovelycatv.relink.std.ir.type.RNumber
-import com.lovelycatv.relink.std.ir.workflow.node.IrPureNode
-import com.lovelycatv.relink.std.ir.workflow.node.port.ParamPort
+import com.lovelycatv.relink.ir.type.RNumber
+import com.lovelycatv.relink.ir.workflow.node.IrPureNode
+import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
 
 class IrSubNode(
     nodeId: NodeId,

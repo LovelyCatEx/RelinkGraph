@@ -8,7 +8,7 @@
 package com.lovelycatv.relink.std.runtime.executor.comparator
 
 import com.lovelycatv.relink.std.ir.pure.IrGTENode
-import com.lovelycatv.relink.std.ir.type.RInt
+import com.lovelycatv.relink.ir.type.RInt
 import com.lovelycatv.relink.std.runtime.booleanValue
 import com.lovelycatv.relink.std.runtime.type.IntValue
 import kotlinx.coroutines.runBlocking

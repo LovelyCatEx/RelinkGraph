@@ -7,7 +7,7 @@
  */
 package com.lovelycatv.relink.std.runtime.executor
 
-import com.lovelycatv.relink.std.ir.PortLabel
+import com.lovelycatv.relink.ir.PortLabel
 import com.lovelycatv.relink.std.ir.source.IrConstantNode
 import com.lovelycatv.relink.std.runtime.asRuntimeValue
 import com.lovelycatv.relink.std.runtime.type.RuntimeValue

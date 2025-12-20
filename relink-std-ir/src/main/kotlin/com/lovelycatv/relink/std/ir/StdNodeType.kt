@@ -7,7 +7,7 @@
  */
 package com.lovelycatv.relink.std.ir
 
-import com.lovelycatv.relink.std.ir.workflow.node.INodeType
+import com.lovelycatv.relink.ir.workflow.node.INodeType
 
 enum class StdNodeType : INodeType {
     ENTRY,

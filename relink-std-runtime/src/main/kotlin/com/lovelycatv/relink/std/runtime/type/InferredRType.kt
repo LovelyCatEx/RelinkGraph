@@ -7,7 +7,7 @@
  */
 package com.lovelycatv.relink.std.runtime.type
 
-import com.lovelycatv.relink.std.ir.type.RType
+import com.lovelycatv.relink.ir.type.RType
 
 data class InferredRType(
     val type: RType,

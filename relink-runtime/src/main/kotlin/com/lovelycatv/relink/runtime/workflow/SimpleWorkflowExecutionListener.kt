@@ -7,7 +7,7 @@
  */
 package com.lovelycatv.relink.runtime.workflow
 
-import com.lovelycatv.relink.std.ir.PortLabel
+import com.lovelycatv.relink.ir.PortLabel
 import com.lovelycatv.relink.std.runtime.type.RuntimeValue
 import kotlin.coroutines.CoroutineContext
 

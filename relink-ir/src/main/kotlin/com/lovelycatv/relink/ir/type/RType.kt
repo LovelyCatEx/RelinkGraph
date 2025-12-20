@@ -5,7 +5,7 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.std.ir.type
+package com.lovelycatv.relink.ir.type
 
 sealed class RType {
     abstract val simpleName: String

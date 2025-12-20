@@ -7,7 +7,7 @@
  */
 package com.lovelycatv.relink.std.runtime.type
 
-import com.lovelycatv.relink.std.ir.type.RComparable
+import com.lovelycatv.relink.ir.type.RComparable
 
 abstract class ComparableValue(override val type: RComparable) : RuntimeValue {
     abstract fun compareTo(other: ComparableValue): IntValue

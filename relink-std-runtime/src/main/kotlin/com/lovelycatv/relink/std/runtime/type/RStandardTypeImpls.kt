@@ -7,7 +7,7 @@
  */
 package com.lovelycatv.relink.std.runtime.type
 
-import com.lovelycatv.relink.std.ir.type.*
+import com.lovelycatv.relink.ir.type.*
 import com.lovelycatv.relink.std.runtime.*
 
 data class StringValue(override val value: String) : RuntimeValue {

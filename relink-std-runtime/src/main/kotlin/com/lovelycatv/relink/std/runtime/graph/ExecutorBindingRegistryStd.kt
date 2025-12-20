@@ -7,8 +7,8 @@
  */
 package com.lovelycatv.relink.std.runtime.graph
 
-import com.lovelycatv.relink.std.ir.workflow.node.INodeType
-import com.lovelycatv.relink.std.ir.workflow.node.IrBaseNode
+import com.lovelycatv.relink.ir.workflow.node.INodeType
+import com.lovelycatv.relink.ir.workflow.node.IrBaseNode
 import com.lovelycatv.relink.std.runtime.executor.NodeExecutor
 
 class ExecutorBindingRegistryStd {

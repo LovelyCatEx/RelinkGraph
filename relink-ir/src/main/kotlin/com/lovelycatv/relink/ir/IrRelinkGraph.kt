@@ -5,9 +5,9 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.std.ir
+package com.lovelycatv.relink.ir
 
-import com.lovelycatv.relink.std.ir.workflow.IrWorkflow
+import com.lovelycatv.relink.ir.workflow.IrWorkflow
 
 data class IrRelinkGraph(
     val graphName: String,

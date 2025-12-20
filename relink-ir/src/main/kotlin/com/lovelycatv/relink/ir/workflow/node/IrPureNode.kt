@@ -5,10 +5,10 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.std.ir.workflow.node
+package com.lovelycatv.relink.ir.workflow.node
 
-import com.lovelycatv.relink.std.ir.NodeId
-import com.lovelycatv.relink.std.ir.workflow.node.port.ParamPort
+import com.lovelycatv.relink.ir.NodeId
+import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
 
 open class IrPureNode(
     nodeId: NodeId,

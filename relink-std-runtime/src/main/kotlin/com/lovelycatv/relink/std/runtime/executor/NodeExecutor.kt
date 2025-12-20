@@ -1,7 +1,7 @@
 package com.lovelycatv.relink.std.runtime.executor
 
-import com.lovelycatv.relink.std.ir.PortLabel
-import com.lovelycatv.relink.std.ir.workflow.node.IrBaseNode
+import com.lovelycatv.relink.ir.PortLabel
+import com.lovelycatv.relink.ir.workflow.node.IrBaseNode
 import com.lovelycatv.relink.std.runtime.type.RuntimeValue
 
 interface NodeExecutor<N : IrBaseNode> {

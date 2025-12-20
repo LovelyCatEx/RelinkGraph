@@ -5,10 +5,10 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.std.ir
+package com.lovelycatv.relink.ir
 
-import com.lovelycatv.relink.std.ir.type.IR_STD_TYPES
-import com.lovelycatv.relink.std.ir.type.RType
+import com.lovelycatv.relink.ir.type.IR_STD_TYPES
+import com.lovelycatv.relink.ir.type.RType
 
 object RelinkGraphIR {
     var initialized = false

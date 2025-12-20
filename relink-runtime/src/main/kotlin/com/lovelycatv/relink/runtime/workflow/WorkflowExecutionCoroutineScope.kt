@@ -7,7 +7,7 @@
  */
 package com.lovelycatv.relink.runtime.workflow
 
-import com.lovelycatv.relink.std.ir.workflow.node.IrBaseNode
+import com.lovelycatv.relink.ir.workflow.node.IrBaseNode
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 

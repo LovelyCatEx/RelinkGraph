@@ -7,7 +7,7 @@
  */
 package com.lovelycatv.relink.std.runtime.type
 
-import com.lovelycatv.relink.std.ir.type.RClass
+import com.lovelycatv.relink.ir.type.RClass
 
 data class ObjectValue(
     override val type: RClass,

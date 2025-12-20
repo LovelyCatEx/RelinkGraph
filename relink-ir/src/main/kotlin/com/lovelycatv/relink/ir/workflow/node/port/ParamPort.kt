@@ -5,10 +5,10 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.std.ir.workflow.node.port
+package com.lovelycatv.relink.ir.workflow.node.port
 
-import com.lovelycatv.relink.std.ir.PortLabel
-import com.lovelycatv.relink.std.ir.type.RType
+import com.lovelycatv.relink.ir.PortLabel
+import com.lovelycatv.relink.ir.type.RType
 
 data class ParamPort(
     val type: RType,

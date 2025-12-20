@@ -5,10 +5,10 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.std.ir.workflow.edge
+package com.lovelycatv.relink.ir.workflow.edge
 
-import com.lovelycatv.relink.std.ir.NodeId
-import com.lovelycatv.relink.std.ir.PortLabel
+import com.lovelycatv.relink.ir.NodeId
+import com.lovelycatv.relink.ir.PortLabel
 
 data class IrPortEdge(
     val from: NodeId,

@@ -7,10 +7,10 @@
  */
 package com.lovelycatv.relink.runtime.graph
 
-import com.lovelycatv.relink.std.ir.workflow.edge.IrPortEdge
-import com.lovelycatv.relink.std.ir.workflow.node.IrBaseNode
-import com.lovelycatv.relink.std.ir.workflow.node.port.ExecPort
-import com.lovelycatv.relink.std.ir.workflow.node.port.ParamPort
+import com.lovelycatv.relink.ir.workflow.edge.IrPortEdge
+import com.lovelycatv.relink.ir.workflow.node.IrBaseNode
+import com.lovelycatv.relink.ir.workflow.node.port.ExecPort
+import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
 
 data class EdgeQueryResult(
     val node: IrBaseNode,
