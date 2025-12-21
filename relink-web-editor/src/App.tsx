@@ -9,17 +9,21 @@ import {RelinkGraphEditor} from "@/editor/RelinkGraphEditor.tsx";
 import {IR_GRAPH_SERIALIZATION_MOCK} from "@/types/relink-graph.types.ts";
 import {Button, Input, Splitter, Tabs, Tree} from "antd";
 import {
-  AimOutlined,
-  BlockOutlined,
+  ApartmentOutlined,
+  AppstoreAddOutlined,
+  AppstoreOutlined,
+  BranchesOutlined,
   BuildOutlined,
   CaretLeftOutlined,
   CaretRightOutlined,
   ExportOutlined,
-  EyeOutlined,
+  ForkOutlined,
   MenuOutlined,
-  SaveOutlined
+  SaveOutlined,
+  SwapRightOutlined
 } from "@ant-design/icons";
 import {createStyles} from "antd-style";
+import {useMemo} from "react";
 
 function App() {
   const useStyles = createStyles(({ token }) => ({
@@ -48,26 +52,51 @@ function App() {
 
   const { styles } = useStyles();
 
-  const treeData = [
-    {
-      title: 'World Root',
-      key: '0-0',
-      icon: <BuildOutlined />,
-      children: [
-        { title: 'Skybox', key: '0-0-0', icon: <BlockOutlined /> },
-        { title: 'Directional Light', key: '0-0-1', icon: <EyeOutlined /> },
-        {
-          title: 'Player Character',
-          key: '0-0-2',
-          icon: <AimOutlined />,
-          children: [
-            { title: 'Mesh', key: '0-0-2-0' },
-            { title: 'Camera', key: '0-0-2-1' },
-          ],
-        },
-      ],
-    },
-  ];
+  const treeData = useMemo(() => {
+    const serialization = IR_GRAPH_SERIALIZATION_MOCK
+
+    return [
+      {
+        title: serialization.graphName,
+        key: serialization.graphName,
+        icon: <ApartmentOutlined />,
+        children: serialization.workflows.map((workflow) => {
+          return {
+            title: workflow.workflowName,
+            key: serialization.graphName + "#" + workflow.workflowName,
+            icon: <BranchesOutlined />,
+            children: [
+              {
+                title: "Nodes",
+                key: serialization.graphName + "#" + workflow.workflowName + "#Node#",
+                icon: <AppstoreAddOutlined />,
+                children: workflow.nodes.map((node) => {
+                  return {
+                    title: node.nodeId,
+                    key: serialization.graphName + "#" + workflow.workflowName + "#Node#" + node.nodeId,
+                    icon: <AppstoreOutlined />
+                  }
+                })
+              },
+              {
+                title: "Edges",
+                key: serialization.graphName + "#" + workflow.workflowName + "#Edge#",
+                icon: <ForkOutlined />,
+                children: workflow.portEdges.map((edge) => {
+                  return {
+                    title: `${edge.from}(${edge.fromPort}) => ${edge.to}(${edge.toPort})`,
+                    key: serialization.graphName + "#" + workflow.workflowName + "#Edge#" + edge.from + "," + edge.fromPort + "," + edge.to + "," + edge.toPort,
+                    icon: <SwapRightOutlined />
+                  }
+                })
+              }
+            ]
+          }
+        })
+      }
+    ]
+  }, [IR_GRAPH_SERIALIZATION_MOCK])
+
 
   return (
     <div className="h-screen w-full font-sans overflow-hidden select-none bg-[var(--background-color)] text-[var(--on-background-color)]">
@@ -106,7 +135,7 @@ function App() {
           }}
         >
           {/* Left Pane */}
-          <Splitter.Panel defaultSize={256} min={256} max="40%" collapsible>
+          <Splitter.Panel defaultSize={320} min={280} max="40%" collapsible>
             <div className="size-full border-r border-white/5 overflow-hidden flex flex-col text-[var(--on-background-color)]">
               <div className="p-4 flex flex-col h-full">
                 <div className="flex justify-between items-center mb-3">
@@ -114,7 +143,7 @@ function App() {
                   <MenuOutlined className="cursor-pointer" />
                 </div>
 
-                <div className="flex-1 overflow-auto custom-scrollbar">
+                <div className="flex-1 overflow-y-scroll custom-scrollbar">
                   <Tree
                     showIcon
                     defaultExpandAll
@@ -139,8 +168,7 @@ function App() {
                 className="editor-tabs-compact"
                 items={[
                   { key: '1', label: 'Inspector' },
-                  { key: '2', label: 'Styles' },
-                  { key: '3', label: 'Events' },
+                  { key: '2', label: 'Settings' },
                 ]}
               />
 
@@ -152,7 +180,7 @@ function App() {
                   </div>
 
                   <div className="space-y-3">
-                    {[['位置', '0.0'], ['旋转', '0.0'], ['缩放', '1.0']].map(([label, val]) => (
+                    {[['Position', '0.0'], ['Rotate', '0.0'], ['Scale', '1.0']].map(([label, val]) => (
                       <div key={label} className="flex items-center gap-2">
                         <span className="w-12">{label}</span>
                         <div className="flex-1 grid grid-cols-3 gap-1">

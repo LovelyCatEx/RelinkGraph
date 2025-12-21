@@ -6,6 +6,10 @@
  */
 @import "tailwindcss";
 
+* {
+    min-height: 0;
+}
+
 :root {
     --primary-color: #818cf8;
     --primary-color-a-75: rgba(129, 140, 248, 0.75);
