@@ -55,6 +55,36 @@ import {RBoolean, RInt} from "@/types/relink-ir.types.ts";
 import {Button, Divider, Tooltip} from "antd";
 import {ApartmentOutlined, FullscreenExitOutlined, RedoOutlined, UndoOutlined} from "@ant-design/icons";
 
+// @ts-ignore
+function openContextMenuAt(
+  areaEl: HTMLElement,
+  x: number,
+  y: number
+) {
+  const event = new MouseEvent('contextmenu', {
+    bubbles: true,
+    cancelable: true,
+    clientX: x,
+    clientY: y,
+  })
+
+  areaEl.dispatchEvent(event)
+}
+
+// @ts-ignore
+function worldToScreen(
+  area: any,
+  wx: number,
+  wy: number
+) {
+  const { x, y, k } = area.transform
+  return {
+    x: wx * k + x,
+    y: wy * k + y,
+  }
+}
+
+
 export interface RelinkGraphEditorProps extends React.HTMLAttributes<HTMLDivElement> {
   initialWorkflow?: IrWorkflow
 }
@@ -377,7 +407,7 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
       {/* Top Float Tools */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 flex group text-[var(--secondary-color)]">
         <div className="backdrop-blur-sm rounded-lg border border-white/10 flex items-center font-mono text-[var(--primary-color)]">
-          <Tooltip title="Undo">
+          <Tooltip title="Undo (CTRL+Z)" placement="bottom">
             <Button
               type="text"
               icon={<UndoOutlined />}
@@ -388,7 +418,7 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
             />
           </Tooltip>
 
-          <Tooltip title="Redo">
+          <Tooltip title="Redo (CTRL+Y)" placement="bottom">
             <Button
               type="text"
               icon={<RedoOutlined />}
@@ -401,7 +431,7 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
 
           <Divider orientation="vertical" className="bg-white/10 h-4 mx-1" />
 
-          <Tooltip title="Fit Viewport">
+          <Tooltip title="Fit Viewport" placement="bottom">
             <Button
               type="text"
               icon={<FullscreenExitOutlined />}
@@ -416,7 +446,7 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
 
           <Divider orientation="vertical" className="bg-white/10 h-4 mx-1" />
 
-          <Tooltip title="Arrange nodes automatically">
+          <Tooltip title="Arrange nodes automatically" placement="bottom">
             <Button
               type="text"
               icon={<ApartmentOutlined />}
