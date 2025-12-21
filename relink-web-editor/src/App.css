@@ -4,3 +4,91 @@
  * Use of this source code is governed by the Apache License, Version 2.0,
  * that can be found in the LICENSE file.
  */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 10px;
+}
+
+/* Tabs bottom border line */
+.editor-tabs-compact .ant-tabs-nav::before {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Tabs item */
+.editor-tabs-compact .ant-tabs-tab {
+    color: var(--secondary-color) !important;
+    font-size: 1em   !important;
+    font-weight: 650 !important;
+}
+
+/* Tabs item activated */
+.editor-tabs-compact .ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: var(--primary-color) !important;
+}
+
+/* Tabs item indicator */
+.editor-tabs-compact .ant-tabs-ink-bar {
+    background: var(--primary-color) !important;
+}
+
+.custom-tree-ui.ant-tree {
+    background: transparent !important;
+    color: var(--on-background-color) !important;
+}
+
+.custom-tree-ui .ant-tree-treenode {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+}
+
+.custom-tree-ui .ant-tree-node-content-wrapper {
+    width: 100% !important;
+    transition: all 0.2s ease;
+    border-radius: 4px !important;
+    padding: .25rem !important;
+}
+
+.custom-tree-ui .ant-tree-node-content-wrapper:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #fff !important;
+}
+
+.custom-tree-ui .ant-tree-node-selected {
+    background: var(--primary-color-a-25) !important;
+    color: var(--primary-color) !important;
+    font-weight: 600;
+}
+
+.custom-tree-ui .ant-tree-node-selected:hover {
+    background: var(--primary-color-a-25) !important;
+    color: var(--primary-color) !important;
+    font-weight: 600;
+}
+
+.custom-tree-ui .ant-tree-switcher {
+    color: #52525b !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.custom-tree-ui .ant-tree-indent-unit::before {
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+.custom-tree-ui .ant-tree-iconEle {
+    color: var(--primary-color) !important;
+    opacity: 0.8;
+}
+
+.ant-slider-rail {
+    background-color: var(--primary-color) !important;
+}
+.ant-slider-track {
+    background-color: #6366f1 !important;
+}

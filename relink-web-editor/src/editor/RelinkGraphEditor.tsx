@@ -52,6 +52,8 @@ import {
   StdNodeType
 } from "@/types/relink-graph-std.types.ts";
 import {RBoolean, RInt} from "@/types/relink-ir.types.ts";
+import {Button, Divider, Tooltip} from "antd";
+import {AppstoreAddOutlined, FullscreenExitOutlined} from "@ant-design/icons";
 
 export interface RelinkGraphEditorProps extends React.HTMLAttributes<HTMLDivElement> {
   initialWorkflow?: IrWorkflow
@@ -216,7 +218,7 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
                 irControlNode(
                   StdNodeType.IF,
                   [execPort()],
-                  [execPort()],
+                  [execPort('True'), execPort('False')],
                   [paramPort(RInt, 'condition')]
                 )
               )
@@ -302,7 +304,95 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
     applyRelinkGraphEditirAreaBackground(ctx.rete.area);
   }, [ctx]);
 
+  // Mouse Position
+  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    if (!ctx) return
+
+    const el = ref.current
+    if (!el) return
+
+    const onMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      const sx = e.clientX - rect.left;
+      const sy = e.clientY - rect.top;
+
+      const { x, y, k } = ctx.rete.area.area.transform;
+
+      const wx = (sx - x) / k;
+      const wy = (sy - y) / k;
+
+      setMousePos({
+        x: Math.round(wx),
+        y: Math.round(wy),
+      });
+    }
+
+    el.addEventListener('mousemove', onMove);
+    return () => el.removeEventListener('mousemove', onMove);
+  }, [ctx]);
+
+  // Area Zoom
+  const [zoom, setZoom] = useState(1);
+  useEffect(() => {
+    if (!ctx) return
+
+    const area = ctx.rete.area;
+
+    const update = () => {
+      setZoom(area.area.transform.k);
+    }
+
+    update();
+
+    area.signal.addPipe((context) => {
+      update();
+      return context;
+    });
+  }, [ctx]);
+
   return (
-    <div className={className} ref={ref} />
+    <div className={className} >
+      <div className="w-full h-full flex-1" ref={ref} />
+
+      {/* Top Float Tools */}
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 flex group text-[var(--secondary-color)]">
+        <div className="backdrop-blur-sm rounded-lg border border-white/10 flex items-center font-mono text-[var(--primary-color)]">
+          <Tooltip title="Fit Viewport">
+            <Button
+              type="text"
+              icon={<FullscreenExitOutlined />}
+              className="h-8 px-3 flex items-center gap-2"
+              onClick={() => {
+                ctx?.autoFitViewport()
+              }}
+            >
+              Fit Viewport
+            </Button>
+          </Tooltip>
+
+          <Divider type="vertical" className="bg-white/10 h-4 mx-1" />
+
+          <Tooltip title="Arrange nodes automatically">
+            <Button
+              type="text"
+              icon={<AppstoreAddOutlined />}
+              className="h-8 px-3 flex items-center gap-2"
+            >
+              Auto Arrange
+            </Button>
+          </Tooltip>
+        </div>
+      </div>
+
+      {/* Bottom Float Panel */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 group">
+        <div className="backdrop-blur-sm px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-4 font-mono text-[var(--primary-color)] hover:bg-[var(--primary-color-a-25)] transition-all duration-100">
+          <span>Position: {mousePos?.x}, {mousePos?.y}</span>
+          <span>Scale: {zoom?.toFixed(2)}x</span>
+        </div>
+      </div>
+    </div>
   )
 }
