@@ -47,6 +47,9 @@ importers:
       rete-context-menu-plugin:
         specifier: ^2.0.6
         version: 2.0.6(rete-area-plugin@2.1.5(rete@2.0.6))(rete@2.0.6)
+      rete-history-plugin:
+        specifier: ^2.1.1
+        version: 2.1.1(rete-area-plugin@2.1.5(rete@2.0.6))(rete@2.0.6)
       rete-react-plugin:
         specifier: ^2.1.0
         version: 2.1.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rete-area-plugin@2.1.5(rete@2.0.6))(rete-render-utils@2.0.3(rete-area-plugin@2.1.5(rete@2.0.6))(rete@2.0.6))(rete@2.0.6)(styled-components@6.1.19(react-dom@19.2.3(react@19.2.3))(react@19.2.3))
@@ -1696,6 +1699,12 @@ packages:
 
   rete-context-menu-plugin@2.0.6:
     resolution: {integrity: sha512-OmzdYEDvaJux4W7pTZPJ9oxO+YMNA4cw3/262ia564+0HXazrcHjyg3m6jXswfleeOS8SAaV+e+X3caTLUyEgw==}
+    peerDependencies:
+      rete: ^2.0.1
+      rete-area-plugin: ^2.0.0
+
+  rete-history-plugin@2.1.1:
+    resolution: {integrity: sha512-Kb2FF51qwl9axSVzusZDJ7ojksg0qPBY3CIhAusHxTLYzO5Di1Nu3cAzHUOHik6kcb3eZI+GYdfqaj/E8xggxQ==}
     peerDependencies:
       rete: ^2.0.1
       rete-area-plugin: ^2.0.0
@@ -3570,6 +3579,12 @@ snapshots:
       rete-area-plugin: 2.1.5(rete@2.0.6)
 
   rete-context-menu-plugin@2.0.6(rete-area-plugin@2.1.5(rete@2.0.6))(rete@2.0.6):
+    dependencies:
+      '@babel/runtime': 7.28.4
+      rete: 2.0.6
+      rete-area-plugin: 2.1.5(rete@2.0.6)
+
+  rete-history-plugin@2.1.1(rete-area-plugin@2.1.5(rete@2.0.6))(rete@2.0.6):
     dependencies:
       '@babel/runtime': 7.28.4
       rete: 2.0.6

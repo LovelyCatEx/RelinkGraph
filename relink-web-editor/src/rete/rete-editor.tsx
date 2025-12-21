@@ -28,6 +28,11 @@ import {
   ArrangeAppliers
 } from "rete-auto-arrange-plugin";
 import {setupPanningBoundary} from "@/rete/ui/boundary";
+import {
+  HistoryExtensions,
+  HistoryPlugin,
+  Presets as HistoryPresets
+} from "rete-history-plugin";
 
 export interface GraphEditorContext<
   S extends BaseGraphSocket,
@@ -42,6 +47,8 @@ export interface GraphEditorContext<
   };
   autoFitViewport(): void;
   autoArrangeNodes(animated: boolean): Promise<void>;
+  historyUndo: () => Promise<void>;
+  historyRedo: () => Promise<void>;
   destroy(): void;
 }
 
@@ -108,6 +115,7 @@ async function createBaseGraphEditor<
   const render = new ReactPlugin<SCHEMES, AreaExtra>({ createRoot });
   const arrange = new AutoArrangePlugin<SCHEMES>();
   const selector = AreaExtensions.selector();
+  const history = new HistoryPlugin<SCHEMES>();
 
   AreaExtensions.selectableNodes(area, selector, {
     accumulating: AreaExtensions.accumulateOnCtrl(),
@@ -160,8 +168,24 @@ async function createBaseGraphEditor<
 
   render.addPreset(Presets.contextMenu.setup({
     customize: {
-      main: () => props.render?.contextMenu?.main ? props.render?.contextMenu?.main?.() : ContextMenuContainer(),
-      item: (item) => props.render?.contextMenu?.item ? props.render?.contextMenu?.item?.(item) : ContextMenuItem(item),
+      main: () => props.render?.contextMenu?.main
+        ? props.render?.contextMenu?.main?.()
+        : ContextMenuContainer({
+          className: "p-2 bg-white rounded-[.5rem] overflow-hidden shadow-2xl min-w-[256px]"
+        }),
+      item: (item) => props.render?.contextMenu?.item
+        ? props.render?.contextMenu?.item?.(item)
+        : ContextMenuItem(item, {
+          className: " flex flex-row justify-between items-center " +
+            "rounded-[.25rem] pt-2 pb-2 pl-4 pr-4 " +
+            "bg-white text-black group " +
+            "hover:bg-blue-500 hover:text-white transition cursor-pointer"
+        }, {
+          className: " flex flex-row justify-between items-center " +
+            "rounded-[.25rem] pt-2 pb-2 pl-4 pr-4 " +
+            "bg-white text-black group " +
+            "hover:bg-red-400 hover:text-white transition cursor-pointer"
+        }),
       subitems: (item) => props.render?.contextMenu?.subitems ? props.render?.contextMenu?.subitems?.(item) : ContextMenuSubItem(),
       common: () => props.render?.contextMenu?.common ? props.render?.contextMenu?.common?.() : Presets.contextMenu.Subitems
     },
@@ -254,10 +278,15 @@ async function createBaseGraphEditor<
       : 0
   });
 
+  // Configure history plugin
+  HistoryExtensions.keyboard(history);
+  history.addPreset(HistoryPresets.classic.setup());
+
   editor.use(area);
   area.use(connection);
   area.use(render);
   area.use(arrange);
+  area.use(history);
 
   AreaExtensions.simpleNodesOrder(area);
 
@@ -272,6 +301,12 @@ async function createBaseGraphEditor<
     },
     autoArrangeNodes: async (animated: boolean) => {
       await arrange.layout({ applier: animated ? transitionApplier : undefined });
+    },
+    historyUndo: async () => {
+      await history.undo();
+    },
+    historyRedo: async () => {
+      await history.redo();
     },
     destroy: () => {
       area.destroy();

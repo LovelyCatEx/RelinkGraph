@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2025 lovelycat
  *
  * Use of this source code is governed by the Apache License, Version 2.0,
@@ -9,7 +9,11 @@ import {forwardRef} from "react";
 import type {Item} from "rete-react-plugin/_types/presets/context-menu/types";
 import {ChevronRight} from "lucide-react";
 
-export const ContextMenuItem = (item: Item) => {
+export const ContextMenuItem = (
+  item: Item,
+  additionalProps?: React.HTMLProps<HTMLDivElement>,
+  deleteItemProps?: React.HTMLProps<HTMLDivElement>
+) => {
   return forwardRef<
     HTMLDivElement,
     React.HTMLProps<HTMLDivElement>
@@ -20,11 +24,7 @@ export const ContextMenuItem = (item: Item) => {
 
     const normalDiv = <div
       ref={ref}
-      className={props.className + " flex flex-row justify-between items-center " +
-        "rounded-[.25rem] pt-2 pb-2 pl-4 pr-4 " +
-        "bg-white text-black group " +
-        "hover:bg-blue-500 hover:text-white transition cursor-pointer"
-      }
+      className={additionalProps?.className ?? "" + " " + props.className}
       {...props}
     >
       <span>{item.label}</span>
@@ -38,11 +38,7 @@ export const ContextMenuItem = (item: Item) => {
 
     const deleteDiv = <div
       ref={ref}
-      className={props.className + " flex flex-row justify-between items-center " +
-        "rounded-[.25rem] pt-2 pb-2 pl-4 pr-4 " +
-        "bg-white text-black group " +
-        "hover:bg-red-400 hover:text-white transition cursor-pointer"
-      }
+      className={props.className + " " + (deleteItemProps?.className ?? "")}
       {...props}
     >
       <p>{item.label}</p>

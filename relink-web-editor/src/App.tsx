@@ -84,8 +84,8 @@ function App() {
           </div>
 
           <div className="flex items-center p-0.5 rounded-xl border border-white/10 space-x-2">
-            <Button type="text" className="text-gray-400 hover:text-white h-8 w-8 flex items-center justify-center" icon={<SaveOutlined />} />
-            <Button type="text" className="text-gray-400 hover:text-white h-8 w-8 flex items-center justify-center" icon={<ExportOutlined />} />
+            <Button type="text" className="h-8 w-8 flex items-center justify-center" icon={<SaveOutlined />} />
+            <Button type="text" className="h-8 w-8 flex items-center justify-center" icon={<ExportOutlined />} />
           </div>
 
           <div className="flex items-center gap-2">

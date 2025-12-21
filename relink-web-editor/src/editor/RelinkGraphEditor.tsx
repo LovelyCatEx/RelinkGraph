@@ -53,7 +53,7 @@ import {
 } from "@/types/relink-graph-std.types.ts";
 import {RBoolean, RInt} from "@/types/relink-ir.types.ts";
 import {Button, Divider, Tooltip} from "antd";
-import {AppstoreAddOutlined, FullscreenExitOutlined} from "@ant-design/icons";
+import {ApartmentOutlined, FullscreenExitOutlined, RedoOutlined, UndoOutlined} from "@ant-design/icons";
 
 export interface RelinkGraphEditorProps extends React.HTMLAttributes<HTMLDivElement> {
   initialWorkflow?: IrWorkflow
@@ -161,17 +161,34 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
           }
         },
         contextMenu: {
-          main: () => ContextMenuContainer(),
-          item: (item) => ContextMenuItem(item),
-          subitems: (_) => ContextMenuSubItem(),
+          main: () => ContextMenuContainer({
+            className: "p-2 rounded-[.5rem] overflow-hidden shadow-2xl min-w-[256px] " +
+              "bg-[var(--background-color)] text-[var(--on-background)] border border-white/10"
+          }),
+          item: (item) => ContextMenuItem(item, {
+            className: " flex flex-row justify-between items-center " +
+              "rounded-[.25rem] pt-2 pb-2 pl-4 pr-4 " +
+              "bg-[var(--background-color)] text-[var(--on-background)] group " +
+              "hover:bg-[var(--primary-color-a-75)] hover:text-[var(--on-primary)] transition cursor-pointer"
+          }, {
+            className: " flex flex-row justify-between items-center " +
+              "rounded-[.25rem] pt-2 pb-2 pl-4 pr-4 " +
+              "bg-[var(--background-color)] text-[var(--on-background)] group " +
+              "hover:bg-red-500/40 hover:text-white transition cursor-pointer"
+          }),
+          subitems: (_) => ContextMenuSubItem({
+            className: "p-2 rounded-[.5rem] overflow-hidden shadow-2xl min-w-[256px] " +
+              "bg-[var(--background-color)] text-[var(--on-background)] border border-white/10"
+          }),
           common: () => () =>
-            <div className="p-2 flex flex-row items-center space-x-2">
+            <div className="p-2 flex flex-row items-center space-x-2 bg-[var(--background-color)] text-[var(--on-background)]">
               <SquareFunction size="20" />
               <p>Create Node</p>
             </div>
         }
       },
       contextMenu: {
+        renderDelay: 100,
         items: [
           ['Entry', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.ENTRY, [execPort()], []))],
           ['Exit', () => new SinkRelinkGraphNode(irSinkNode(StdNodeType.EXIT, [execPort()], []))],
@@ -275,6 +292,7 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
       }
     })
   );
+
   const [ctx, setCtx] = useState<RelinkGraphEditorContext | null>(null);
 
   useEffect(() => {
@@ -359,6 +377,30 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
       {/* Top Float Tools */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 flex group text-[var(--secondary-color)]">
         <div className="backdrop-blur-sm rounded-lg border border-white/10 flex items-center font-mono text-[var(--primary-color)]">
+          <Tooltip title="Undo">
+            <Button
+              type="text"
+              icon={<UndoOutlined />}
+              className="h-8 px-3 flex items-center gap-2"
+              onClick={() => {
+                ctx?.historyUndo();
+              }}
+            />
+          </Tooltip>
+
+          <Tooltip title="Redo">
+            <Button
+              type="text"
+              icon={<RedoOutlined />}
+              className="h-8 px-3 flex items-center gap-2"
+              onClick={() => {
+                ctx?.historyRedo();
+              }}
+            />
+          </Tooltip>
+
+          <Divider orientation="vertical" className="bg-white/10 h-4 mx-1" />
+
           <Tooltip title="Fit Viewport">
             <Button
               type="text"
@@ -377,7 +419,7 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
           <Tooltip title="Arrange nodes automatically">
             <Button
               type="text"
-              icon={<AppstoreAddOutlined />}
+              icon={<ApartmentOutlined />}
               className="h-8 px-3 flex items-center gap-2"
               onClick={() => {
                 ctx?.autoArrangeNodes(true);
