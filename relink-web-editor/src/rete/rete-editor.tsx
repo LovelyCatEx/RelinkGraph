@@ -15,6 +15,13 @@ import {BaseGraphNode} from "./node/BaseGraphNode.ts";
 import {BaseGraphNodeConnection} from "./types/connection.ts";
 import {getConnectionSockets} from "./utils/socket-utils.ts";
 import {type ReactElement, useCallback} from "react";
+import {type ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets} from "rete-context-menu-plugin";
+import type {EditorContextMenuItem, GraphNodeFactory} from "@/rete/types/context-menu.ts";
+import type {ItemDefinition} from "rete-context-menu-plugin/_types/presets/classic/types";
+import type {ComponentType, Item} from "rete-react-plugin/_types/presets/context-menu/types";
+import {ContextMenuContainer} from "@/editor/ui/menu/ContextMenuContainer.tsx";
+import {ContextMenuItem} from "@/editor/ui/menu/ContextMenuItem.tsx";
+import {ContextMenuSubItem} from "@/editor/ui/menu/ContextMenuSubItem.tsx";
 
 export interface GraphEditorContext<
   S extends BaseGraphSocket,
@@ -24,8 +31,8 @@ export interface GraphEditorContext<
 > {
   rete: {
     editor: NodeEditor<SCHEMES>;
-    area:  AreaPlugin<SCHEMES, ReactArea2D<SCHEMES>>;
-    connection: ConnectionPlugin<SCHEMES, ReactArea2D<SCHEMES>>;
+    area: AreaPlugin<SCHEMES, ReactArea2D<SCHEMES> | ContextMenuExtra>;
+    connection: ConnectionPlugin<SCHEMES, ReactArea2D<SCHEMES> | ContextMenuExtra>;
   };
   autoFitViewport(): void;
   destroy(): void;
@@ -42,9 +49,19 @@ export interface CreateGraphEditorProps<
     node?: (editor: NodeEditor<SCHEMES>, node: SCHEMES["Node"], emit: RenderEmit<SCHEMES>) => ReactElement | undefined | null;
     connection?: (editor: NodeEditor<SCHEMES>, connection: SCHEMES["Connection"]) => ReactElement | undefined | null;
     socket?: (editor: NodeEditor<SCHEMES>, socket: S) => ReactElement | undefined | null;
+    contextMenu?: {
+      main?: () => ComponentType;
+      item?: (item: Item) => ComponentType;
+      subitems?: (item: Item) => ComponentType;
+      common?: () => ComponentType;
+    }
   },
   events?: {
     onInvalidConnection?: () => void
+  },
+  contextMenu?: {
+    items: EditorContextMenuItem<S>[],
+    renderDelay?: number
   }
 }
 
@@ -71,7 +88,7 @@ async function createBaseGraphEditor<
   container: HTMLElement,
   props: CreateGraphEditorProps<S, N, C, SCHEMES>
 ): Promise<GraphEditorContext<S, N, C, SCHEMES>> {
-  type AreaExtra = ReactArea2D<SCHEMES>;
+  type AreaExtra = ReactArea2D<SCHEMES> | ContextMenuExtra;
 
   const editor = new NodeEditor<SCHEMES>();
   const area = new AreaPlugin<SCHEMES, AreaExtra>(container);
@@ -81,6 +98,27 @@ async function createBaseGraphEditor<
   AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
     accumulating: AreaExtensions.accumulateOnCtrl(),
   });
+
+  // Configure context menu
+  const resolveContextMenu = (item: EditorContextMenuItem<S>): ItemDefinition<SCHEMES> => {
+    const [key, factoryOrItems] = item;
+    if (typeof factoryOrItems == 'function') {
+      return [key, async () => {
+        const fx = (factoryOrItems as GraphNodeFactory<S>)
+        return fx() as SCHEMES["Node"];
+      }]
+    } else {
+      return [key, (factoryOrItems as EditorContextMenuItem<S>[]).map((it) => resolveContextMenu(it))]
+    }
+  }
+
+  const contextMenu = new ContextMenuPlugin<SCHEMES>({
+    items: ContextMenuPresets.classic.setup(
+      props.contextMenu?.items?.map((item) => resolveContextMenu(item)) ?? []
+    ),
+  });
+
+  area.use(contextMenu);
 
   // Configure render
   render.addPreset(
@@ -105,6 +143,16 @@ async function createBaseGraphEditor<
       },
     })
   );
+
+  render.addPreset(Presets.contextMenu.setup({
+    customize: {
+      main: () => props.render?.contextMenu?.main ? props.render?.contextMenu?.main?.() : ContextMenuContainer(),
+      item: (item) => props.render?.contextMenu?.item ? props.render?.contextMenu?.item?.(item) : ContextMenuItem(item),
+      subitems: (item) => props.render?.contextMenu?.subitems ? props.render?.contextMenu?.subitems?.(item) : ContextMenuSubItem(),
+      common: () => props.render?.contextMenu?.common ? props.render?.contextMenu?.common?.() : Presets.contextMenu.Subitems
+    },
+    delay: props.contextMenu?.renderDelay ?? 500
+  }));
 
   // Configure connection
   connection.addPreset(() => {

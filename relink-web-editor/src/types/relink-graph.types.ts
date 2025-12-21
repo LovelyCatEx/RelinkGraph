@@ -1,3 +1,6 @@
+import {randomUUID} from "@/utils/uuid.ts";
+import type {RType} from "@/types/relink-ir.types.ts";
+
 /**
  * Copyright 2025 lovelycat
  *
@@ -17,6 +20,26 @@ export interface ExecPort {
 export interface ParamPort {
   type: string;
   label: PortLabel;
+}
+
+export function execPort(label: string = 'exec'): ExecPort {
+  return {
+    label: label,
+  }
+}
+
+export function paramPortPlain(type: string, label: string): ParamPort {
+  return {
+    type: type,
+    label: label
+  }
+}
+
+export function paramPort(type: RType, label: string): ParamPort {
+  return {
+    type: type.qualifiedName,
+    label: label
+  }
 }
 
 export interface IrBaseNode {
@@ -51,6 +74,89 @@ export interface IrWorkflow {
 export interface IrRelinkGraph {
   graphName: string,
   workflows: IrWorkflow[]
+}
+
+export function irActionNode(
+  nodeType: NodeType,
+  execInputs: ExecPort[],
+  execOutputs: ExecPort[],
+  paramInputs: ParamPort[],
+  paramOutputs: ParamPort[]
+): IrBaseNode {
+  return {
+    nodeId: randomUUID(),
+    nodeRole: 'ACTION',
+    nodeType: nodeType,
+    execInputs: execInputs,
+    execOutputs: execOutputs,
+    inputs: paramInputs,
+    outputs: paramOutputs,
+  }
+}
+
+export function irPureNode(
+  nodeType: NodeType,
+  paramInputs: ParamPort[],
+  paramOutputs: ParamPort[]
+): IrBaseNode {
+  return {
+    nodeId: randomUUID(),
+    nodeRole: 'PURE',
+    nodeType: nodeType,
+    execInputs: [],
+    execOutputs: [],
+    inputs: paramInputs,
+    outputs: paramOutputs,
+  }
+}
+
+export function irControlNode(
+  nodeType: NodeType,
+  execInputs: ExecPort[],
+  execOutputs: ExecPort[],
+  paramInputs: ParamPort[]
+): IrBaseNode {
+  return {
+    nodeId: randomUUID(),
+    nodeRole: 'CONTROL',
+    nodeType: nodeType,
+    execInputs: execInputs,
+    execOutputs: execOutputs,
+    inputs: paramInputs,
+    outputs: [],
+  }
+}
+
+export function irSourceNode(
+  nodeType: NodeType,
+  execOutputs: ExecPort[],
+  paramOutputs: ParamPort[]
+): IrBaseNode {
+  return {
+    nodeId: randomUUID(),
+    nodeRole: 'SOURCE',
+    nodeType: nodeType,
+    execInputs: [],
+    execOutputs: execOutputs,
+    inputs: [],
+    outputs: paramOutputs,
+  }
+}
+
+export function irSinkNode(
+  nodeType: NodeType,
+  execInputs: ExecPort[],
+  paramInputs: ParamPort[]
+): IrBaseNode {
+  return {
+    nodeId: randomUUID(),
+    nodeRole: 'SINK',
+    nodeType: nodeType,
+    execInputs: execInputs,
+    execOutputs: [],
+    inputs: paramInputs,
+    outputs: [],
+  }
 }
 
 export const IR_GRAPH_SERIALIZATION_MOCK: IrRelinkGraph = {

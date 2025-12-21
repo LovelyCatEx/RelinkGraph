@@ -6,35 +6,15 @@
  */
 import {BaseGraphNode} from "@/rete/node/BaseGraphNode.ts";
 import {execSocket, paramSocket, type RelinkGraphSocket} from "@/editor/socket";
-import type {ExecPort, NodeId, NodeRole, NodeType, ParamPort} from "@/types/relink-graph.types.ts";
+import type {IrBaseNode} from "@/types/relink-graph.types.ts";
 
 export class BaseRelinkGraphNode extends BaseGraphNode<RelinkGraphSocket> {
-  public readonly nodeId: NodeId;
-  public readonly nodeRole: NodeRole;
-  public readonly nodeType: NodeType;
-  public execInputs: ExecPort[];
-  public execOutputs: ExecPort[];
-  public paramInputs: ParamPort[];
-  public paramOutputs: ParamPort[];
+  public readonly node: IrBaseNode;
 
-  constructor(
-    nodeId: NodeId,
-    nodeRole: NodeRole,
-    nodeType: NodeType,
-    execInputs: ExecPort[],
-    execOutputs: ExecPort[],
-    paramInputs: ParamPort[],
-    paramOutputs: ParamPort[],
-  ) {
-    super(nodeId);
+  constructor(node: IrBaseNode) {
+    super(node.nodeId);
 
-    this.nodeId = nodeId;
-    this.nodeRole = nodeRole;
-    this.nodeType = nodeType;
-    this.execInputs = execInputs;
-    this.execOutputs = execOutputs;
-    this.paramInputs = paramInputs;
-    this.paramOutputs = paramOutputs;
+    this.node = node;
 
     this.renderSockets();
   }
@@ -44,19 +24,19 @@ export class BaseRelinkGraphNode extends BaseGraphNode<RelinkGraphSocket> {
     super.clearOutputs();
 
 
-    for (const execInput of this.execInputs) {
+    for (const execInput of this.node.execInputs) {
       super.addInputSocket(execInput.label, execSocket, execInput.label);
     }
 
-    for (const execOutput of this.execOutputs) {
+    for (const execOutput of this.node.execOutputs) {
       super.addOutputSocket(execOutput.label, execSocket, execOutput.label);
     }
 
-    for (const input of this.paramInputs) {
+    for (const input of this.node.inputs) {
       super.addInputSocket(input.label, paramSocket, input.label);
     }
 
-    for (const output of this.paramOutputs) {
+    for (const output of this.node.outputs) {
       super.addOutputSocket(output.label, paramSocket, output.label);
     }
   }

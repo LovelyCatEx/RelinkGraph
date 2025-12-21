@@ -5,15 +5,10 @@
  * that can be found in the LICENSE file.
  */
 import {BaseRelinkGraphNode} from "@/editor/node/BaseRelinkGraphNode.ts";
-import type {NodeId, NodeType, ParamPort} from "@/types/relink-graph.types.ts";
+import type {IrBaseNode} from "@/types/relink-graph.types.ts";
 
 export class PureRelinkGraphNode extends BaseRelinkGraphNode {
-  constructor(
-    nodeId: NodeId,
-    nodeType: NodeType,
-    paramInputs: ParamPort[],
-    paramOutputs: ParamPort[],
-  ) {
-    super(nodeId, 'PURE', nodeType, [], [], paramInputs, paramOutputs);
+  constructor(node: IrBaseNode) {
+    super(node);
   }
 }
