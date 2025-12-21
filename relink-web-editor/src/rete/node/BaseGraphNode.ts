@@ -12,6 +12,9 @@ export abstract class BaseGraphNode<S extends BaseGraphSocket> extends ClassicPr
   Record<string, NonNullable<S>>,
   object
 > {
+  public width: number = 300;
+  public height: number = 200;
+
   protected constructor(nodeType: string) {
     super(nodeType);
   }

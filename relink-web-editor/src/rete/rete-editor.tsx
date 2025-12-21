@@ -22,6 +22,11 @@ import type {ComponentType, Item} from "rete-react-plugin/_types/presets/context
 import {ContextMenuContainer} from "@/editor/ui/menu/ContextMenuContainer.tsx";
 import {ContextMenuItem} from "@/editor/ui/menu/ContextMenuItem.tsx";
 import {ContextMenuSubItem} from "@/editor/ui/menu/ContextMenuSubItem.tsx";
+import {
+  AutoArrangePlugin,
+  Presets as ArrangePresets,
+  ArrangeAppliers
+} from "rete-auto-arrange-plugin";
 
 export interface GraphEditorContext<
   S extends BaseGraphSocket,
@@ -35,6 +40,7 @@ export interface GraphEditorContext<
     connection: ConnectionPlugin<SCHEMES, ReactArea2D<SCHEMES> | ContextMenuExtra>;
   };
   autoFitViewport(): void;
+  autoArrangeNodes(animated: boolean): Promise<void>;
   destroy(): void;
 }
 
@@ -94,6 +100,7 @@ async function createBaseGraphEditor<
   const area = new AreaPlugin<SCHEMES, AreaExtra>(container);
   const connection = new ConnectionPlugin<SCHEMES, AreaExtra>();
   const render = new ReactPlugin<SCHEMES, AreaExtra>({ createRoot });
+  const arrange = new AutoArrangePlugin<SCHEMES>();
 
   AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
     accumulating: AreaExtensions.accumulateOnCtrl(),
@@ -216,9 +223,23 @@ async function createBaseGraphEditor<
     });
   });
 
+  // Configure arrange
+  const transitionApplier = new ArrangeAppliers.TransitionApplier<SCHEMES, never>({
+    duration: 500,
+    timingFunction: (t) => t,
+    async onTick() {
+      await AreaExtensions.zoomAt(area, editor.getNodes());
+    }
+  });
+
+  arrange.addPreset(ArrangePresets.classic.setup({
+    spacing: 128
+  }));
+
   editor.use(area);
   area.use(connection);
   area.use(render);
+  area.use(arrange);
 
   AreaExtensions.simpleNodesOrder(area);
 
@@ -230,6 +251,9 @@ async function createBaseGraphEditor<
     },
     autoFitViewport: () => {
       AreaExtensions.zoomAt(area, editor.getNodes())
+    },
+    autoArrangeNodes: async (animated: boolean) => {
+      await arrange.layout({ applier: animated ? transitionApplier : undefined });
     },
     destroy: () => area.destroy(),
   };

@@ -365,7 +365,7 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
               icon={<FullscreenExitOutlined />}
               className="h-8 px-3 flex items-center gap-2"
               onClick={() => {
-                ctx?.autoFitViewport()
+                ctx?.autoFitViewport();
               }}
             >
               Fit Viewport
@@ -379,6 +379,9 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
               type="text"
               icon={<AppstoreAddOutlined />}
               className="h-8 px-3 flex items-center gap-2"
+              onClick={() => {
+                ctx?.autoArrangeNodes(true);
+              }}
             >
               Auto Arrange
             </Button>
