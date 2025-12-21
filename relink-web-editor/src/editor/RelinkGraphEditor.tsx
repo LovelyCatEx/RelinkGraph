@@ -35,9 +35,9 @@ import {ActionGraphNodeComponent} from "@/editor/ui/node/ActionGraphNodeComponen
 import {ExecSocketComponent} from "@/editor/ui/socket/ExecSocket.tsx";
 import {ParamSocketComponent} from "@/editor/ui/socket/ParamSocket.tsx";
 import {PureGraphNodeComponent} from "@/editor/ui/node/PureGraphNodeComponent.tsx";
-import {ContextMenuContainer} from "@/editor/ui/menu/ContextMenuContainer.tsx";
-import {ContextMenuItem} from "@/editor/ui/menu/ContextMenuItem.tsx";
-import {ContextMenuSubItem} from "@/editor/ui/menu/ContextMenuSubItem.tsx";
+import {ContextMenuContainer} from "@/rete/ui/menu/ContextMenuContainer.tsx";
+import {ContextMenuItem} from "@/rete/ui/menu/ContextMenuItem.tsx";
+import {ContextMenuSubItem} from "@/rete/ui/menu/ContextMenuSubItem.tsx";
 import {SquareFunction} from "lucide-react";
 import {
   type IrAddNode,
@@ -372,7 +372,7 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
             </Button>
           </Tooltip>
 
-          <Divider type="vertical" className="bg-white/10 h-4 mx-1" />
+          <Divider orientation="vertical" className="bg-white/10 h-4 mx-1" />
 
           <Tooltip title="Arrange nodes automatically">
             <Button

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2025 lovelycat
  *
  * Use of this source code is governed by the Apache License, Version 2.0,
@@ -6,7 +6,7 @@
  */
 import * as React from "react";
 import {forwardRef} from "react";
-import {ContextMenuContainer} from "@/editor/ui/menu/ContextMenuContainer.tsx";
+import {ContextMenuContainer} from "@/rete/ui/menu/ContextMenuContainer.tsx";
 
 const ContextMenuContainerComponent = ContextMenuContainer()
 

@@ -19,14 +19,15 @@ import {type ContextMenuExtra, ContextMenuPlugin, Presets as ContextMenuPresets}
 import type {EditorContextMenuItem, GraphNodeFactory} from "@/rete/types/context-menu.ts";
 import type {ItemDefinition} from "rete-context-menu-plugin/_types/presets/classic/types";
 import type {ComponentType, Item} from "rete-react-plugin/_types/presets/context-menu/types";
-import {ContextMenuContainer} from "@/editor/ui/menu/ContextMenuContainer.tsx";
-import {ContextMenuItem} from "@/editor/ui/menu/ContextMenuItem.tsx";
-import {ContextMenuSubItem} from "@/editor/ui/menu/ContextMenuSubItem.tsx";
+import {ContextMenuContainer} from "@/rete/ui/menu/ContextMenuContainer.tsx";
+import {ContextMenuItem} from "@/rete/ui/menu/ContextMenuItem.tsx";
+import {ContextMenuSubItem} from "@/rete/ui/menu/ContextMenuSubItem.tsx";
 import {
   AutoArrangePlugin,
   Presets as ArrangePresets,
   ArrangeAppliers
 } from "rete-auto-arrange-plugin";
+import {setupPanningBoundary} from "@/rete/ui/boundary";
 
 export interface GraphEditorContext<
   S extends BaseGraphSocket,
@@ -68,6 +69,11 @@ export interface CreateGraphEditorProps<
   contextMenu?: {
     items: EditorContextMenuItem<S>[],
     renderDelay?: number
+  },
+  panningBoundary?: {
+    enabled?: boolean,
+    padding?: number,
+    intensity?: number
   }
 }
 
@@ -101,8 +107,9 @@ async function createBaseGraphEditor<
   const connection = new ConnectionPlugin<SCHEMES, AreaExtra>();
   const render = new ReactPlugin<SCHEMES, AreaExtra>({ createRoot });
   const arrange = new AutoArrangePlugin<SCHEMES>();
+  const selector = AreaExtensions.selector();
 
-  AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
+  AreaExtensions.selectableNodes(area, selector, {
     accumulating: AreaExtensions.accumulateOnCtrl(),
   });
 
@@ -236,6 +243,17 @@ async function createBaseGraphEditor<
     spacing: 128
   }));
 
+  // Panning boundary
+  const panningBoundary = setupPanningBoundary({
+    editor,
+    area,
+    selector,
+    padding: props?.panningBoundary?.padding ?? 120,
+    intensity: (props?.panningBoundary?.enabled ?? true)
+      ? (props?.panningBoundary?.intensity ?? 4)
+      : 0
+  });
+
   editor.use(area);
   area.use(connection);
   area.use(render);
@@ -255,6 +273,9 @@ async function createBaseGraphEditor<
     autoArrangeNodes: async (animated: boolean) => {
       await arrange.layout({ applier: animated ? transitionApplier : undefined });
     },
-    destroy: () => area.destroy(),
+    destroy: () => {
+      area.destroy();
+      panningBoundary.destroy();
+    },
   };
 }
