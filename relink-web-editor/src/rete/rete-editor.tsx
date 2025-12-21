@@ -1,0 +1,188 @@
+/**
+ * Copyright 2025 lovelycat
+ *
+ * Use of this source code is governed by the Apache License, Version 2.0,
+ * that can be found in the LICENSE file.
+ */
+import {Presets, type ReactArea2D, ReactPlugin, type RenderEmit} from "rete-react-plugin";
+import {NodeEditor} from "rete";
+import {AreaExtensions, AreaPlugin} from "rete-area-plugin";
+import {ClassicFlow, ConnectionPlugin, getSourceTarget, type SocketData} from "rete-connection-plugin";
+import {createRoot} from "react-dom/client";
+import type {BaseGraphSchemes} from "./types/schemes.ts";
+import type {BaseGraphSocket} from "./socket/BaseGraphSocket.ts";
+import {BaseGraphNode} from "./node/BaseGraphNode.ts";
+import {BaseGraphNodeConnection} from "./types/connection.ts";
+import {getConnectionSockets} from "./utils/socket-utils.ts";
+import {type ReactElement, useCallback} from "react";
+
+export interface GraphEditorContext<
+  S extends BaseGraphSocket,
+  N extends BaseGraphNode<S>,
+  C extends BaseGraphNodeConnection<S, N, N>,
+  SCHEMES extends BaseGraphSchemes<S, N, C>
+> {
+  rete: {
+    editor: NodeEditor<SCHEMES>;
+    area:  AreaPlugin<SCHEMES, ReactArea2D<SCHEMES>>;
+    connection: ConnectionPlugin<SCHEMES, ReactArea2D<SCHEMES>>;
+  };
+  autoFitViewport(): void;
+  destroy(): void;
+}
+
+export interface CreateGraphEditorProps<
+  S extends BaseGraphSocket,
+  N extends BaseGraphNode<S>,
+  C extends BaseGraphNodeConnection<S, N, N>,
+  SCHEMES extends BaseGraphSchemes<S, N, C>
+> {
+  connectionFactory: (fromNode: N, fromSocket: string, toNode: N, toSocket: string) => SCHEMES["Connection"],
+  render?: {
+    node?: (editor: NodeEditor<SCHEMES>, node: SCHEMES["Node"], emit: RenderEmit<SCHEMES>) => ReactElement | undefined | null;
+    connection?: (editor: NodeEditor<SCHEMES>, connection: SCHEMES["Connection"]) => ReactElement | undefined | null;
+    socket?: (editor: NodeEditor<SCHEMES>, socket: S) => ReactElement | undefined | null;
+  },
+  events?: {
+    onInvalidConnection?: () => void
+  }
+}
+
+export function useCreateReteBaseGraphEditor<
+  S extends BaseGraphSocket,
+  N extends BaseGraphNode<S>,
+  C extends BaseGraphNodeConnection<S, N, N>,
+  SCHEMES extends BaseGraphSchemes<S, N, C>
+>(props: CreateGraphEditorProps<S, N, C, SCHEMES>) {
+  return useCallback(
+    (container: HTMLElement) => {
+      return createBaseGraphEditor(container, props);
+    },
+    []
+  )
+}
+
+async function createBaseGraphEditor<
+  S extends BaseGraphSocket,
+  N extends BaseGraphNode<S>,
+  C extends BaseGraphNodeConnection<S, N, N>,
+  SCHEMES extends BaseGraphSchemes<S, N, C>
+>(
+  container: HTMLElement,
+  props: CreateGraphEditorProps<S, N, C, SCHEMES>
+): Promise<GraphEditorContext<S, N, C, SCHEMES>> {
+  type AreaExtra = ReactArea2D<SCHEMES>;
+
+  const editor = new NodeEditor<SCHEMES>();
+  const area = new AreaPlugin<SCHEMES, AreaExtra>(container);
+  const connection = new ConnectionPlugin<SCHEMES, AreaExtra>();
+  const render = new ReactPlugin<SCHEMES, AreaExtra>({ createRoot });
+
+  AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
+    accumulating: AreaExtensions.accumulateOnCtrl(),
+  });
+
+  // Configure render
+  render.addPreset(
+    Presets.classic.setup({
+      customize: {
+        node(data) {
+          return ({ emit }) => {
+            return props.render?.node?.(editor, data.payload, emit) ?? <Presets.classic.Node data={data.payload} emit={emit} />
+          }
+        },
+        connection(data) {
+          // const { source, target } = getConnectionSockets(editor, data.payload);
+          return () => {
+            return props.render?.connection?.(editor, data.payload) ?? <Presets.classic.Connection data={data.payload} />
+          };
+        },
+        socket(data) {
+          return () => {
+            return props.render?.socket?.(editor, data.payload as S) ?? <Presets.classic.Socket data={data.payload} />
+          }
+        }
+      },
+    })
+  );
+
+  // Configure connection
+  connection.addPreset(() => {
+    return new ClassicFlow({
+      canMakeConnection(from: SocketData, to: SocketData) {
+        const [source, target] = getSourceTarget(from, to) || [null, null];
+
+        if (!source || !target || from === to) return false;
+
+        const sourceNode = editor.getNode(source.nodeId)!;
+        const targetNode = editor.getNode(target.nodeId)!;
+
+        const sockets = getConnectionSockets(
+          editor,
+          props.connectionFactory(
+            sourceNode,
+            source.key,
+            targetNode,
+            target.key
+          )
+        );
+
+        if (!sockets.source!.isCompatibleWith(sockets.target!)) {
+          props.events?.onInvalidConnection?.();
+          connection.drop();
+          return false;
+        }
+
+        const connected = editor
+          .getConnections()
+          .find((conn) => conn.source == sourceNode.id &&
+            conn.target == targetNode.id &&
+            conn.sourceOutput == source.key &&
+            conn.targetInput == target.key
+          ) != null;
+
+        // Already connected before
+        if (connected) {
+          connection.drop();
+          return false;
+        }
+
+        return Boolean(source && target);
+      },
+      makeConnection(from: SocketData, to: SocketData, context) {
+        const [source, target] = getSourceTarget(from, to) || [null, null];
+        const { editor } = context;
+
+        if (source && target) {
+          void editor.addConnection(
+            props.connectionFactory(
+              editor.getNode(source.nodeId)!,
+              source.key,
+              editor.getNode(target.nodeId)!,
+              target.key
+            )
+          );
+          return true;
+        }
+      }
+    });
+  });
+
+  editor.use(area);
+  area.use(connection);
+  area.use(render);
+
+  AreaExtensions.simpleNodesOrder(area);
+
+  return {
+    rete: {
+      editor: editor,
+      area: area,
+      connection: connection,
+    },
+    autoFitViewport: () => {
+      AreaExtensions.zoomAt(area, editor.getNodes())
+    },
+    destroy: () => area.destroy(),
+  };
+}
