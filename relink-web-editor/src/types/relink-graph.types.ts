@@ -82,10 +82,11 @@ export function irActionNode(
   execInputs: ExecPort[],
   execOutputs: ExecPort[],
   paramInputs: ParamPort[],
-  paramOutputs: ParamPort[]
+  paramOutputs: ParamPort[],
+  nodeName?: string,
 ): IrBaseNode {
   return {
-    nodeId: randomUUID(),
+    nodeId: nodeName ?? randomUUID(),
     nodeRole: 'ACTION',
     nodeType: nodeType,
     execInputs: execInputs,
@@ -98,10 +99,11 @@ export function irActionNode(
 export function irPureNode(
   nodeType: NodeType,
   paramInputs: ParamPort[],
-  paramOutputs: ParamPort[]
+  paramOutputs: ParamPort[],
+  nodeName?: string,
 ): IrBaseNode {
   return {
-    nodeId: randomUUID(),
+    nodeId: nodeName ?? randomUUID(),
     nodeRole: 'PURE',
     nodeType: nodeType,
     execInputs: [],
@@ -115,10 +117,11 @@ export function irControlNode(
   nodeType: NodeType,
   execInputs: ExecPort[],
   execOutputs: ExecPort[],
-  paramInputs: ParamPort[]
+  paramInputs: ParamPort[],
+  nodeName?: string,
 ): IrBaseNode {
   return {
-    nodeId: randomUUID(),
+    nodeId: nodeName ?? randomUUID(),
     nodeRole: 'CONTROL',
     nodeType: nodeType,
     execInputs: execInputs,
@@ -131,10 +134,11 @@ export function irControlNode(
 export function irSourceNode(
   nodeType: NodeType,
   execOutputs: ExecPort[],
-  paramOutputs: ParamPort[]
+  paramOutputs: ParamPort[],
+  nodeName?: string,
 ): IrBaseNode {
   return {
-    nodeId: randomUUID(),
+    nodeId: nodeName ?? randomUUID(),
     nodeRole: 'SOURCE',
     nodeType: nodeType,
     execInputs: [],
@@ -147,10 +151,11 @@ export function irSourceNode(
 export function irSinkNode(
   nodeType: NodeType,
   execInputs: ExecPort[],
-  paramInputs: ParamPort[]
+  paramInputs: ParamPort[],
+  nodeName?: string,
 ): IrBaseNode {
   return {
-    nodeId: randomUUID(),
+    nodeId: nodeName ?? randomUUID(),
     nodeRole: 'SINK',
     nodeType: nodeType,
     execInputs: execInputs,

@@ -46,6 +46,7 @@ export interface GraphEditorContext<
   getSelectedNodes: () => N[];
   enableReadonly: () => void;
   disableReadonly: () => void;
+  registerContextMenu: (items: EditorContextMenuItem<S>[]) => void;
   destroy(): void;
 }
 
@@ -138,27 +139,6 @@ async function createBaseGraphEditor<
   AreaExtensions.selectableNodes(area, selector, {
     accumulating: AreaExtensions.accumulateOnCtrl(),
   });
-
-  // Configure context menu
-  const resolveContextMenu = (item: EditorContextMenuItem<S>): ItemDefinition<SCHEMES> => {
-    const [key, factoryOrItems] = item;
-    if (typeof factoryOrItems == 'function') {
-      return [key, async () => {
-        const fx = (factoryOrItems as GraphNodeFactory<S>)
-        return fx() as SCHEMES["Node"];
-      }]
-    } else {
-      return [key, (factoryOrItems as EditorContextMenuItem<S>[]).map((it) => resolveContextMenu(it))]
-    }
-  }
-
-  const contextMenu = new ContextMenuPlugin<SCHEMES>({
-    items: ContextMenuPresets.classic.setup(
-      props.contextMenu?.items?.map((item) => resolveContextMenu(item)) ?? []
-    ),
-  });
-
-  area.use(contextMenu);
 
   // Configure render
   render.addPreset(
@@ -372,6 +352,28 @@ async function createBaseGraphEditor<
     },
     disableReadonly: () => {
       readonly.disable();
+    },
+    registerContextMenu: (menus) => {
+      // Configure context menu
+      const resolveContextMenu = (item: EditorContextMenuItem<S>): ItemDefinition<SCHEMES> => {
+        const [key, factoryOrItems] = item;
+        if (typeof factoryOrItems == 'function') {
+          return [key, async () => {
+            const fx = (factoryOrItems as GraphNodeFactory<S>)
+            return fx() as SCHEMES["Node"];
+          }]
+        } else {
+          return [key, (factoryOrItems as EditorContextMenuItem<S>[]).map((it) => resolveContextMenu(it))]
+        }
+      }
+
+      const contextMenu = new ContextMenuPlugin<SCHEMES>({
+        items: ContextMenuPresets.classic.setup(
+          menus.map((item) => resolveContextMenu(item)) ?? []
+        ),
+      });
+
+      area.use(contextMenu);
     },
     destroy: () => {
       area.destroy();

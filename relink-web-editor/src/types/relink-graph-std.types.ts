@@ -21,6 +21,7 @@ export enum StdNodeType {
   LT = 'LT',
   LTE = 'LTE',
   EQ = 'EQ',
+  CONST = 'CONST',
 }
 
 export interface IrConstNode extends IrBaseNode {

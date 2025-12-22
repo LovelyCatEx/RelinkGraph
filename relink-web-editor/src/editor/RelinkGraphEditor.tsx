@@ -26,7 +26,7 @@ import {
   irSinkNode,
   irSourceNode,
   type IrWorkflow,
-  type NodeId, type ParamPort,
+  type NodeId, type NodeType, type ParamPort,
   paramPort
 } from "@/types/relink-graph.types.ts";
 import {ActionRelinkGraphNode} from "@/editor/node/ActionRelinkGraphNode.ts";
@@ -54,7 +54,7 @@ import {
   type IrSubNode,
   StdNodeType
 } from "@/types/relink-graph-std.types.ts";
-import {getRType, RBoolean, RInt} from "@/types/relink-ir.types.ts";
+import {getRType, RBoolean, RByte, RDouble, RFloat, RInt, RLong, RShort, RString} from "@/types/relink-ir.types.ts";
 import {Button, Divider, Tooltip} from "antd";
 import {ApartmentOutlined, FullscreenExitOutlined, LockOutlined, RedoOutlined, UndoOutlined} from "@ant-design/icons";
 import {NotificationContext} from "@/main.tsx";
@@ -158,6 +158,21 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
   const { initialWorkflow, className, onEditorInitialized } = props;
 
   const [isEditorReadonly, setEditorReadonly] = useState<boolean>(false);
+
+  const [ctx, setCtx] = useState<RelinkGraphEditorContext | null>(null);
+
+  const generateNewNodeName = (nodes: BaseRelinkGraphNode[], nodeType: NodeType) => {
+    let count = 1;
+    const mapping = nodes.associateBy((node) => node.node.nodeId);
+
+    let expectedName = `${nodeType.toLowerCase()} ${count}`;
+    while (mapping.has(expectedName)) {
+      count++;
+      expectedName = `${nodeType.toLowerCase()} ${count}`;
+    }
+
+    return expectedName;
+  }
 
   const [ref, baseCtx] = useRete(
     useCreateReteBaseGraphEditor<
@@ -267,112 +282,12 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
       },
       contextMenu: {
         renderDelay: 100,
-        items: [
-          ['Entry', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.ENTRY, [execPort()], []))],
-          ['Exit', () => new SinkRelinkGraphNode(irSinkNode(StdNodeType.EXIT, [execPort()], []))],
-          ['Math', [
-            ['Add(x, y)', () => new PureRelinkGraphNode({
-              ...irPureNode(
-                StdNodeType.ADD,
-                [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
-                [paramPort(RInt, 'z')]
-              ),
-              operandType: RInt
-            } as IrAddNode)
-            ],
-            ['Subtract(x, y)', () => new PureRelinkGraphNode({
-              ...irPureNode(
-                StdNodeType.SUB,
-                [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
-                [paramPort(RInt, 'z')]
-              ),
-              operandType: RInt
-            } as IrSubNode)
-            ],
-            ['Multiply(x, y)', () => new PureRelinkGraphNode({
-              ...irPureNode(
-                StdNodeType.MUL,
-                [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
-                [paramPort(RInt, 'z')]
-              ),
-              operandType: RInt
-            } as IrMulNode)
-            ],
-            ['Divide(x, y)', () => new PureRelinkGraphNode({
-              ...irPureNode(
-                StdNodeType.DIV,
-                [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
-                [paramPort(RInt, 'z')]
-              ),
-              operandType: RInt
-            } as IrDivNode)
-            ],
-          ]],
-          ['Control', [
-            ['If Else', () => new ControlRelinkGraphNode(
-                irControlNode(
-                  StdNodeType.IF,
-                  [execPort()],
-                  [execPort('True'), execPort('False')],
-                  [paramPort(RInt, 'condition')]
-                )
-              )
-            ],
-          ]],
-          ['Comparator', [
-            ['=', () => new PureRelinkGraphNode({
-              ...irPureNode(
-                StdNodeType.EQ,
-                [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
-                [paramPort(RBoolean, 'z')]
-              ),
-              operandType: RInt
-            } as IrEQNode)
-            ],
-            ['>', () => new PureRelinkGraphNode({
-              ...irPureNode(
-                StdNodeType.GT,
-                [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
-                [paramPort(RBoolean, 'z')]
-              ),
-              operandType: RInt
-            } as IrGTNode)
-            ],
-            ['>=', () => new PureRelinkGraphNode({
-              ...irPureNode(
-                StdNodeType.GTE,
-                [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
-                [paramPort(RBoolean, 'z')]
-              ),
-              operandType: RInt
-            } as IrGTENode)
-            ],
-            ['<', () => new PureRelinkGraphNode({
-              ...irPureNode(
-                StdNodeType.LT,
-                [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
-                [paramPort(RBoolean, 'z')]
-              ),
-              operandType: RInt
-            } as IrLTNode)
-            ],
-            ['<=', () => new PureRelinkGraphNode({
-              ...irPureNode(
-                StdNodeType.LTE,
-                [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
-                [paramPort(RBoolean, 'z')]
-              ),
-              operandType: RInt
-            } as IrLTENode)
-            ],
-          ]]
-        ]
+        items: []
       },
       events: props
     })
   );
 
-  const [ctx, setCtx] = useState<RelinkGraphEditorContext | null>(null);
   useEffect(() => {
     if (!baseCtx) return;
 
@@ -437,9 +352,140 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
       getConnectionByEdge: getConnectionByEdge,
       deleteNodeById: deleteNodeById,
       deleteConnectionByEdge: deleteConnectionByEdge,
+      generateNewNodeName: (nodeType) => {
+        return generateNewNodeName(baseCtx.rete.editor.getNodes(), nodeType);
+      },
+      hasEntryNode: () => {
+        return baseCtx.rete.editor
+          .getNodes()
+          .first((it) => it.node.nodeType == StdNodeType.ENTRY) as SourceRelinkGraphNode;
+      }
     };
 
     setCtx(integratedCtx);
+
+    // Register context menu
+    integratedCtx.registerContextMenu(
+      [
+        ['Exit', () => new SinkRelinkGraphNode(irSinkNode(StdNodeType.EXIT, [execPort()], [], integratedCtx.generateNewNodeName(StdNodeType.EXIT)))],
+        ['Constant', [
+          ['Boolean', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RBoolean, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
+          ['Int', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RInt, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
+          ['String', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RString, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
+          ['Float', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RFloat, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
+          ['Double', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RDouble, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
+          ['Long', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RLong, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
+          ['Short', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RShort, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
+          ['Byte', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RByte, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
+        ]],
+        ['Math', [
+          ['Add(x, y)', () => new PureRelinkGraphNode({
+            ...irPureNode(
+              StdNodeType.ADD,
+              [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
+              [paramPort(RInt, 'z')],
+              integratedCtx.generateNewNodeName(StdNodeType.ADD)
+            ),
+            operandType: RInt
+          } as IrAddNode)
+          ],
+          ['Subtract(x, y)', () => new PureRelinkGraphNode({
+            ...irPureNode(
+              StdNodeType.SUB,
+              [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
+              [paramPort(RInt, 'z')],
+              integratedCtx.generateNewNodeName(StdNodeType.SUB)
+            ),
+            operandType: RInt
+          } as IrSubNode)
+          ],
+          ['Multiply(x, y)', () => new PureRelinkGraphNode({
+            ...irPureNode(
+              StdNodeType.MUL,
+              [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
+              [paramPort(RInt, 'z')],
+              integratedCtx.generateNewNodeName(StdNodeType.MUL)
+            ),
+            operandType: RInt
+          } as IrMulNode)
+          ],
+          ['Divide(x, y)', () => new PureRelinkGraphNode({
+            ...irPureNode(
+              StdNodeType.DIV,
+              [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
+              [paramPort(RInt, 'z')],
+              integratedCtx.generateNewNodeName(StdNodeType.DIV)
+            ),
+            operandType: RInt
+          } as IrDivNode)
+          ],
+        ]],
+        ['Control', [
+          ['If Else', () => new ControlRelinkGraphNode(
+            irControlNode(
+              StdNodeType.IF,
+              [execPort()],
+              [execPort('True'), execPort('False')],
+              [paramPort(RBoolean, 'condition')],
+              integratedCtx.generateNewNodeName(StdNodeType.IF)
+            )
+          )
+          ],
+        ]],
+        ['Comparator', [
+          ['=', () => new PureRelinkGraphNode({
+            ...irPureNode(
+              StdNodeType.EQ,
+              [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
+              [paramPort(RBoolean, 'z')],
+              integratedCtx.generateNewNodeName(StdNodeType.EQ)
+            ),
+            operandType: RInt
+          } as IrEQNode)
+          ],
+          ['>', () => new PureRelinkGraphNode({
+            ...irPureNode(
+              StdNodeType.GT,
+              [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
+              [paramPort(RBoolean, 'z')],
+              integratedCtx.generateNewNodeName(StdNodeType.GT)
+            ),
+            operandType: RInt
+          } as IrGTNode)
+          ],
+          ['>=', () => new PureRelinkGraphNode({
+            ...irPureNode(
+              StdNodeType.GTE,
+              [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
+              [paramPort(RBoolean, 'z')],
+              integratedCtx.generateNewNodeName(StdNodeType.GTE)
+            ),
+            operandType: RInt
+          } as IrGTENode)
+          ],
+          ['<', () => new PureRelinkGraphNode({
+            ...irPureNode(
+              StdNodeType.LT,
+              [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
+              [paramPort(RBoolean, 'z')],
+              integratedCtx.generateNewNodeName(StdNodeType.LT)
+            ),
+            operandType: RInt
+          } as IrLTNode)
+          ],
+          ['<=', () => new PureRelinkGraphNode({
+            ...irPureNode(
+              StdNodeType.LTE,
+              [paramPort(RInt, 'x'), paramPort(RInt, 'y')],
+              [paramPort(RBoolean, 'z')],
+              integratedCtx.generateNewNodeName(StdNodeType.LTE)
+            ),
+            operandType: RInt
+          } as IrLTENode)
+          ],
+        ]]
+      ]
+    );
 
     onEditorInitialized?.(integratedCtx);
   }, [baseCtx]);
