@@ -50,9 +50,10 @@ import {
   UnlockOutlined
 } from "@ant-design/icons";
 import {createStyles} from "antd-style";
-import {type ReactElement, startTransition, useEffect, useState} from "react";
+import {type ReactElement, startTransition, useContext, useEffect, useState} from "react";
 import type {BaseRelinkGraphNode} from "@/editor/node/BaseRelinkGraphNode.ts";
 import type {RelinkGraphConnection, RelinkGraphEditorContext} from "@/editor/types";
+import {NotificationContext} from "@/main.tsx";
 
 type TreeContextMenuOperationType =
   'new-graph'
@@ -147,6 +148,8 @@ const getNodeIcon = (nodeRole: NodeRole) => {
 }
 
 function App() {
+  const notification = useContext(NotificationContext);
+
   const { styles: splitterStyles } = useSplitterStyles();
 
   const [editorContext, setEditorContext] = useState<RelinkGraphEditorContext | null>(null);
@@ -468,6 +471,13 @@ function App() {
                   startTransition(() => {
                     setConnections(connections);
                   });
+                }}
+                onInitialRendered={() => {
+                  notification?.['success']?.({
+                    title: 'Workflow',
+                    description: `Workflow ${currentWorkflow.workflowName} loaded successfully.`,
+                  })
+                  editorContext?.autoFitViewport();
                 }}
               />
             </div>

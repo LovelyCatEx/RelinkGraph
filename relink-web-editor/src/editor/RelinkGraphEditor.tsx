@@ -190,12 +190,15 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
           return false;
         }
 
-        if (!getRType((toPort as ParamPort).type).isAssignableFrom(getRType((fromPort as ParamPort).type))) {
-          notification?.['warning']?.({
-            title: 'Connection',
-            description: `Incapable type, cannot cast type ${(fromPort as ParamPort).type} to type ${(toPort as ParamPort).type}`,
-          })
-          return false;
+        // Fix: only ParamPort owns type property
+        if ((fromPort as ParamPort).type && (toPort as ParamPort).type) {
+          if (!getRType((toPort as ParamPort).type).isAssignableFrom(getRType((fromPort as ParamPort).type))) {
+            notification?.['warning']?.({
+              title: 'Connection',
+              description: `Incapable type, cannot cast type ${(fromPort as ParamPort).type} to type ${(toPort as ParamPort).type}`,
+            })
+            return false;
+          }
         }
 
         return true;
