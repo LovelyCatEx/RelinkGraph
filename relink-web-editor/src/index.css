@@ -28,8 +28,9 @@
     --on-secondary-container: #181a2c;
 
     --background-color: #2B2D30;
+    --background-container: rgba(29, 29, 29, 0.5);
     --on-background-color: #fffbff;
-
+    --on-background-container: #2B2D30;
 
     --font-size-small: 0.9em;
     --font-size-normal: 1em;

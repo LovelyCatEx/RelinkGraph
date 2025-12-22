@@ -5,7 +5,7 @@
  * that can be found in the LICENSE file.
  */
 import {useRete} from "rete-react-plugin";
-import {useCreateReteBaseGraphEditor} from "@/rete/rete-editor.tsx";
+import {type CreateGraphEditorPropsEvents, useCreateReteBaseGraphEditor} from "@/rete/rete-editor.tsx";
 import type {RelinkGraphSocket} from "@/editor/socket";
 import type {BaseRelinkGraphNode} from "@/editor/node/BaseRelinkGraphNode.ts";
 import {RelinkGraphConnection, type RelinkGraphEditorContext, type RelinkGraphSchemes} from "@/editor/types";
@@ -85,8 +85,12 @@ function worldToScreen(
 }
 
 
-export interface RelinkGraphEditorProps extends React.HTMLAttributes<HTMLDivElement> {
-  initialWorkflow?: IrWorkflow
+export interface RelinkGraphEditorProps extends
+  React.HTMLAttributes<HTMLDivElement>,
+  CreateGraphEditorPropsEvents<RelinkGraphSocket, BaseRelinkGraphNode, RelinkGraphConnection>
+{
+  initialWorkflow?: IrWorkflow;
+  onEditorInitialized?: (ctx: RelinkGraphEditorContext) => void;
 }
 
 async function renderWorkflow(ctx: RelinkGraphEditorContext, ir: IrWorkflow) {
@@ -140,7 +144,9 @@ async function renderWorkflow(ctx: RelinkGraphEditorContext, ir: IrWorkflow) {
   }
 }
 
-export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEditorProps) {
+export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
+  const { initialWorkflow, className, onEditorInitialized } = props;
+
   const [ref, baseCtx] = useRete(
     useCreateReteBaseGraphEditor<
       RelinkGraphSocket,
@@ -319,7 +325,8 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
             ],
           ]]
         ]
-      }
+      },
+      events: props
     })
   );
 
@@ -328,14 +335,18 @@ export function RelinkGraphEditor({ initialWorkflow, className }: RelinkGraphEdi
   useEffect(() => {
     if (!baseCtx) return;
 
-    setCtx({
+    const integratedCtx: RelinkGraphEditorContext = {
       ...baseCtx,
       getNodeById: (nodeId) => {
         return baseCtx.rete.editor
           .getNodes()
           .find((it) => it.node.nodeId == nodeId)
       }
-    });
+    };
+
+    setCtx(integratedCtx);
+
+    onEditorInitialized?.(integratedCtx);
   }, [baseCtx]);
 
   useEffect(() => {

@@ -49,7 +49,24 @@ export interface GraphEditorContext<
   autoArrangeNodes(animated: boolean): Promise<void>;
   historyUndo: () => Promise<void>;
   historyRedo: () => Promise<void>;
+  getSelectedNodes: () => N[];
   destroy(): void;
+}
+
+export interface CreateGraphEditorPropsEvents<
+  S extends BaseGraphSocket,
+  N extends BaseGraphNode<S>,
+  C extends BaseGraphNodeConnection<S, N, N>
+> {
+  onInvalidConnection?: () => void,
+  onNodeSelected?: (node: N) => void,
+  onSelectedNodesChanged?: (nodes: N[]) => void,
+  onNodesChanged?: (type: 'created' | 'removed', currentNodes: N[]) => void,
+  onNodeCreated?: (node: N) => void,
+  onNodeRemoved?: (node: N) => void,
+  onConnectionsChanged?: (type: 'created' | 'removed', currentConnections: C[]) => void,
+  onConnectionCreated?: (conn: C) => void,
+  onConnectionRemoved?: (conn: C) => void,
 }
 
 export interface CreateGraphEditorProps<
@@ -70,9 +87,7 @@ export interface CreateGraphEditorProps<
       common?: () => ComponentType;
     }
   },
-  events?: {
-    onInvalidConnection?: () => void
-  },
+  events?: CreateGraphEditorPropsEvents<S, N, C>,
   contextMenu?: {
     items: EditorContextMenuItem<S>[],
     renderDelay?: number
@@ -290,7 +305,7 @@ async function createBaseGraphEditor<
 
   AreaExtensions.simpleNodesOrder(area);
 
-  return {
+  const ctx = {
     rete: {
       editor: editor,
       area: area,
@@ -308,9 +323,47 @@ async function createBaseGraphEditor<
     historyRedo: async () => {
       await history.redo();
     },
+    getSelectedNodes: () => {
+      return editor
+        .getNodes()
+        .filter((node) => node?.selected ?? null)
+        .filterNotNull()
+    },
     destroy: () => {
       area.destroy();
       panningBoundary.destroy();
     },
   };
+
+  // Configure event pipes
+  area.addPipe((context) => {
+    if (context.type == 'nodepicked') {
+      props?.events?.onNodeSelected?.(editor.getNode(context.data.id)!);
+      props?.events?.onSelectedNodesChanged?.(ctx.getSelectedNodes());
+    } else if (context.type == 'pointerup') {
+      props?.events?.onSelectedNodesChanged?.(ctx.getSelectedNodes());
+    }
+
+    return context;
+  });
+
+  editor.addPipe((context) => {
+    if (context.type == 'nodecreated') {
+      props?.events?.onNodeCreated?.(context.data);
+      props?.events?.onNodesChanged?.('created', editor.getNodes());
+    } else if (context.type == 'noderemoved') {
+      props?.events?.onNodeRemoved?.(context.data);
+      props?.events?.onNodesChanged?.('removed', editor.getNodes());
+    } else if (context.type == 'connectioncreated') {
+      props?.events?.onConnectionCreated?.(context.data);
+      props?.events?.onConnectionsChanged?.('created', editor.getConnections());
+    } else if (context.type == 'connectionremoved') {
+      props?.events?.onConnectionRemoved?.(context.data);
+      props?.events?.onConnectionsChanged?.('removed', editor.getConnections());
+    }
+
+    return context;
+  });
+
+  return ctx;
 }

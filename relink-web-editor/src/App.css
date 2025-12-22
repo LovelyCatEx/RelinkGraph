@@ -5,7 +5,7 @@
  * that can be found in the LICENSE file.
  */
 .custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
+    width: 3px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
@@ -78,6 +78,12 @@
     align-items: center !important;
     justify-content: center !important;
 }
+
+.ant-tree .ant-tree-switcher:before {
+    left: auto!important;
+    top: auto!important;
+}
+
 .custom-tree-ui .ant-tree-indent-unit::before {
     border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
 }

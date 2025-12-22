@@ -9,6 +9,9 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import {ConfigProvider} from "antd";
+import {registerAllKotlinModules} from "kotlin-ts";
+
+registerAllKotlinModules();
 
 const cssVar = (varName: string) => getComputedStyle(document.documentElement)
   .getPropertyValue(varName)
@@ -32,11 +35,11 @@ createRoot(document.getElementById('root')!).render(
 
           // ===== Background =====
           colorBgBase: cssVar('--background-color'),
-          colorBgContainer: cssVar('--background-color'),
+          colorBgContainer: cssVar('--background-container'),
           colorBgElevated: cssVar('--background-color'),
 
           // ===== Border =====
-          colorBorder: cssVar('--secondary-color-a-50'),
+          colorBorder: 'transparent',
           colorBorderSecondary: cssVar('--secondary-color-a-25'),
 
           // ===== Control / State =====
