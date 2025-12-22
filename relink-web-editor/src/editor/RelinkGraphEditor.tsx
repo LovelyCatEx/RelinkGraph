@@ -58,6 +58,9 @@ import {getRType, RBoolean, RInt} from "@/types/relink-ir.types.ts";
 import {Button, Divider, Tooltip} from "antd";
 import {ApartmentOutlined, FullscreenExitOutlined, LockOutlined, RedoOutlined, UndoOutlined} from "@ant-design/icons";
 import {NotificationContext} from "@/main.tsx";
+import {ControlGraphNodeComponent} from "@/editor/ui/node/ControlGraphNodeComponent.tsx";
+import {SinkGraphNodeComponent} from "@/editor/ui/node/SinkGraphNodeComponent.tsx";
+import {SourceGraphNodeComponent} from "@/editor/ui/node/SourceGraphNodeComponent.tsx";
 
 // @ts-ignore
 function openContextMenuAt(
@@ -222,11 +225,11 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
           } else if (node.node.nodeRole == 'PURE') {
             return <PureGraphNodeComponent data={node} emit={emit} />;
           } else if (node.node.nodeRole == 'SOURCE') {
-            return <ActionGraphNodeComponent data={node} emit={emit} />;
+            return <SourceGraphNodeComponent data={node} emit={emit} />;
           } else if (node.node.nodeRole == 'SINK') {
-            return <ActionGraphNodeComponent data={node} emit={emit} />;
+            return <SinkGraphNodeComponent data={node} emit={emit} />;
           } else if (node.node.nodeRole == 'CONTROL') {
-            return <ActionGraphNodeComponent data={node} emit={emit} />;
+            return <ControlGraphNodeComponent data={node} emit={emit} />;
           } else {
             return undefined;
           }

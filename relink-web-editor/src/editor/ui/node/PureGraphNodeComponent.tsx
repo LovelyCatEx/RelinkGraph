@@ -33,9 +33,8 @@ export function PureGraphNodeComponent<S extends RelinkGraphSchemes>(props: Prop
       <div className="header flex flex-col text-white pl-4 pr-4 pt-2 pb-2">
         <div className="flex flex-row items-center space-x-2">
           <SquareFunction size="28" />
-          <div className="title">{props.data.node.nodeType} ({props.data.node.nodeRole})</div>
+          <div className="title">{props.data.node.nodeId} ({props.data.node.nodeType})</div>
         </div>
-        <div className="subtitle">ID: {props.data.node.nodeId}</div>
       </div>
 
       <div className="flex flex-row justify-between p-4 space-x-4">

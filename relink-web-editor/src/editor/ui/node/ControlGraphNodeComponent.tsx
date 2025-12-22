@@ -7,7 +7,7 @@
 import {type ClassicScheme, Presets, type RenderEmit} from "rete-react-plugin";
 import {css} from "styled-components";
 import './base-graph-node.styles.css';
-import './action-graph-node.styles.css';
+import './control-graph-node.styles.css';
 import classNames from "classnames";
 import {useRef} from "react";
 import {SquareFunction} from "lucide-react";
@@ -22,14 +22,14 @@ type Props<S extends ClassicScheme> = {
 };
 
 
-export function ActionGraphNodeComponent<S extends RelinkGraphSchemes>(props: Props<S>) {
+export function ControlGraphNodeComponent<S extends RelinkGraphSchemes>(props: Props<S>) {
   const ref = useRef<HTMLDivElement>(null);
 
   const inputs = Object.entries(props.data.inputs)
   const outputs = Object.entries(props.data.outputs)
 
   return (
-    <div ref={ref} className={"base-graph-node action-graph-node " + classNames({"base-graph-node--selected": props.data.selected})}>
+    <div ref={ref} className={"base-graph-node control-graph-node " + classNames({"base-graph-node--selected": props.data.selected})}>
       <div className="header flex flex-col text-white pl-4 pr-4 pt-2 pb-2">
         <div className="flex flex-row items-center space-x-2">
           <SquareFunction size="28" />

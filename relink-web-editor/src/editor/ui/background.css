@@ -8,10 +8,10 @@
     display: table;
     z-index: -1;
     position: absolute;
-    top: -320000px;
-    left: -320000px;
-    width: 640000px;
-    height: 640000px;
+    top: -640000px;
+    left: -640000px;
+    width: 1280000px;
+    height: 1280000px;
 }
 
 .area-background {
@@ -22,6 +22,9 @@
             linear-gradient(90deg, #0f0f0f 1.5px, transparent 1.5px),
             linear-gradient(#333333 1.5px, transparent 1.5px),
             linear-gradient(90deg, #333333 1.5px, #262626 1.5px);
-    background-size: 200px 200px, 200px 200px, 25px 25px, 25px 25px;
+    background-size: calc(64px * 8) calc(64px * 8),
+                     calc(64px * 8) calc(64px * 8),
+                     64px 64px,
+                     64px 64px;
     background-position: -1.5px -1.5px, -1.5px -1.5px, -1.5px -1.5px, -1.5px -1.5px;
 }

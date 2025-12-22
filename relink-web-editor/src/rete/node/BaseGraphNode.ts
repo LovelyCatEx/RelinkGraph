@@ -13,7 +13,7 @@ export abstract class BaseGraphNode<S extends BaseGraphSocket> extends ClassicPr
   object
 > {
   public width: number = 300;
-  public height: number = 200;
+  public height: number = 180;
 
   protected constructor(nodeType: string) {
     super(nodeType);

@@ -303,7 +303,7 @@ async function createBaseGraphEditor<
   });
 
   arrange.addPreset(ArrangePresets.classic.setup({
-    spacing: 128
+    spacing: 100
   }));
 
   // Panning boundary

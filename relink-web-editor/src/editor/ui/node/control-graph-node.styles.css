@@ -4,11 +4,11 @@
  * Use of this source code is governed by the Apache License, Version 2.0,
  * that can be found in the LICENSE file.
  */
-.action-graph-node .header {
-    background: radial-gradient(80% 90%, rgba(63, 128, 195, .5) 10%, #3e6b9f 100%);
+.control-graph-node .header {
+    background: radial-gradient(80% 90%, #5e5e5e 10%, #bfbfbf 100%);
 }
 
-.action-graph-node .title {
+.control-graph-node .title {
     font-size: 1.2em;
     color: #e5e7ff;
     white-space: nowrap;
@@ -16,7 +16,7 @@
     text-overflow: ellipsis;
 }
 
-.action-graph-node .subtitle {
+.control-graph-node .subtitle {
     color: #b6b6b6;
     font-weight: 500;
     font-size: 1em;
