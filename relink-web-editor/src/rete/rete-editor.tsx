@@ -22,19 +22,11 @@ import type {ComponentType, Item} from "rete-react-plugin/_types/presets/context
 import {ContextMenuContainer} from "@/rete/ui/menu/ContextMenuContainer.tsx";
 import {ContextMenuItem} from "@/rete/ui/menu/ContextMenuItem.tsx";
 import {ContextMenuSubItem} from "@/rete/ui/menu/ContextMenuSubItem.tsx";
-import {
-  AutoArrangePlugin,
-  Presets as ArrangePresets,
-  ArrangeAppliers
-} from "rete-auto-arrange-plugin";
+import {ArrangeAppliers, AutoArrangePlugin, Presets as ArrangePresets} from "rete-auto-arrange-plugin";
 import {setupPanningBoundary} from "@/rete/ui/boundary";
-import {
-  HistoryExtensions,
-  HistoryPlugin,
-  Presets as HistoryPresets
-} from "rete-history-plugin";
+import {HistoryExtensions, HistoryPlugin, Presets as HistoryPresets} from "rete-history-plugin";
 import {SquareFunction} from "lucide-react";
-import { ReadonlyPlugin } from "rete-readonly-plugin";
+import {ReadonlyPlugin} from "rete-readonly-plugin";
 
 export interface GraphEditorContext<
   S extends BaseGraphSocket,
@@ -80,6 +72,7 @@ export interface CreateGraphEditorProps<
   SCHEMES extends BaseGraphSchemes<S, N, C>
 > {
   connectionFactory: (fromNode: N, fromSocket: string, toNode: N, toSocket: string) => SCHEMES["Connection"],
+  canMakeConnection?: (fromNode: N, fromSocket: S, fromLabel: string, toNode: N, toSocket: S, toLabel: string) => boolean,
   render?: {
     node?: (editor: NodeEditor<SCHEMES>, node: SCHEMES["Node"], emit: RenderEmit<SCHEMES>) => ReactElement | undefined | null;
     connection?: (editor: NodeEditor<SCHEMES>, connection: SCHEMES["Connection"]) => ReactElement | undefined | null;
@@ -233,7 +226,7 @@ async function createBaseGraphEditor<
         const sourceNode = editor.getNode(source.nodeId)!;
         const targetNode = editor.getNode(target.nodeId)!;
 
-        const sockets = getConnectionSockets(
+        const sockets = getConnectionSockets<S, N, C, SCHEMES>(
           editor,
           props.connectionFactory(
             sourceNode,
@@ -261,6 +254,22 @@ async function createBaseGraphEditor<
         if (connected) {
           connection.drop();
           return false;
+        }
+
+        // Additional check
+        if (props?.canMakeConnection) {
+          if (!props.canMakeConnection(
+            sourceNode,
+            sockets.source!,
+            source.key,
+            targetNode,
+            sockets.target!,
+            target.key)
+          ) {
+            props.events?.onInvalidConnection?.();
+            connection.drop();
+            return false;
+          }
         }
 
         return Boolean(source && target);

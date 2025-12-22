@@ -18,6 +18,7 @@ import {ExecConnectionComponent} from "@/editor/ui/connection/ExecConnection.tsx
 import {ParamConnectionComponent} from "@/editor/ui/connection/ParamConnection.tsx";
 import {ParamSocket} from "@/editor/socket/ParamSocket.ts";
 import {
+  type ExecPort,
   execPort,
   irControlNode,
   type IrPortEdge,
@@ -25,7 +26,7 @@ import {
   irSinkNode,
   irSourceNode,
   type IrWorkflow,
-  type NodeId,
+  type NodeId, type ParamPort,
   paramPort
 } from "@/types/relink-graph.types.ts";
 import {ActionRelinkGraphNode} from "@/editor/node/ActionRelinkGraphNode.ts";
@@ -53,7 +54,7 @@ import {
   type IrSubNode,
   StdNodeType
 } from "@/types/relink-graph-std.types.ts";
-import {RBoolean, RInt} from "@/types/relink-ir.types.ts";
+import {getRType, RBoolean, RInt} from "@/types/relink-ir.types.ts";
 import {Button, Divider, Tooltip} from "antd";
 import {ApartmentOutlined, FullscreenExitOutlined, LockOutlined, RedoOutlined, UndoOutlined} from "@ant-design/icons";
 import {NotificationContext} from "@/main.tsx";
@@ -169,6 +170,32 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
         toSocket
       ) => {
         return new RelinkGraphConnection(fromNode, fromSocket, toNode, toSocket)
+      },
+      canMakeConnection: (fromNode, s, fromLabel, toNode, t, toLabel) => {
+        const fromPort = fromNode.findOutputSocket(fromLabel) as ExecPort | ParamPort;
+        const toPort = toNode.findInputSocket(toLabel) as ExecPort | ParamPort;
+
+        if (!s.isCompatibleWith(t)) {
+          return false;
+        }
+
+        if (!fromPort || !toPort) {
+          notification?.['warning']?.({
+            title: 'Connection',
+            description: `Could not find port of source or target node when connecting ${fromNode.node.nodeId} [${fromLabel}] to ${toNode.node.nodeId} [${toLabel}]`,
+          })
+          return false;
+        }
+
+        if (!getRType((toPort as ParamPort).type).isAssignableFrom(getRType((fromPort as ParamPort).type))) {
+          notification?.['warning']?.({
+            title: 'Connection',
+            description: `Incapable type, cannot cast type ${(fromPort as ParamPort).type} to type ${(toPort as ParamPort).type}`,
+          })
+          return false;
+        }
+
+        return true;
       },
       render: {
         socket(_, socket) {

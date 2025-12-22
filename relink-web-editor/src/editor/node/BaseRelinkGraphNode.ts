@@ -6,7 +6,7 @@
  */
 import {BaseGraphNode} from "@/rete/node/BaseGraphNode.ts";
 import {execSocket, paramSocket, type RelinkGraphSocket} from "@/editor/socket";
-import type {IrBaseNode} from "@/types/relink-graph.types.ts";
+import type {INodePort, IrBaseNode, PortLabel} from "@/types/relink-graph.types.ts";
 
 export class BaseRelinkGraphNode extends BaseGraphNode<RelinkGraphSocket> {
   public readonly node: IrBaseNode;
@@ -17,6 +17,14 @@ export class BaseRelinkGraphNode extends BaseGraphNode<RelinkGraphSocket> {
     this.node = node;
 
     this.renderSockets();
+  }
+
+  public findInputSocket(label: PortLabel): INodePort | undefined {
+    return ([...this.node.execInputs, ...this.node.inputs]).find((port: INodePort) => port.label == label);
+  }
+
+  public findOutputSocket(label: PortLabel): INodePort | undefined {
+    return ([...this.node.execOutputs, ...this.node.outputs]).find((port: INodePort) => port.label == label);
   }
 
   public renderSockets() {

@@ -7,17 +7,37 @@
 export interface RType {
   qualifiedName: string;
   simpleName: string;
+  isAssignableFrom: (from: RType) => boolean;
 }
 
 export interface RComparable extends RType {}
 
 export interface RNumber extends RComparable {}
 
+export const RELINK_TYPES_MAP = new Map<string, RType>();
+
 function defineRType<T extends RType>(name: string, qualifiedName: string = name): T {
-  return {
+  if (RELINK_TYPES_MAP.has(qualifiedName)) {
+    throw new Error(`An RType with qualifiedName ${qualifiedName} is already defined.`);
+  }
+
+  const type = {
     qualifiedName: qualifiedName,
     simpleName: name,
-  } as T
+    isAssignableFrom: (from) => from.qualifiedName == qualifiedName,
+  } as T;
+
+  RELINK_TYPES_MAP.set(qualifiedName, type);
+
+  return type;
+}
+
+export function getRType(qualifiedName: string): RType {
+  if (!RELINK_TYPES_MAP.has(qualifiedName)) {
+    throw new Error(`RType ${qualifiedName} is not defined.`);
+  }
+
+  return RELINK_TYPES_MAP.get(qualifiedName)!;
 }
 
 export const RChar = defineRType<RType>('RChar')

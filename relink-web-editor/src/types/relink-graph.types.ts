@@ -13,13 +13,14 @@ export type PortLabel = string;
 
 export type NodeRole = 'ACTION' | 'CONTROL' | 'PURE' | 'SOURCE' | 'SINK';
 
-export interface ExecPort {
+export interface INodePort {
   label: PortLabel;
 }
 
-export interface ParamPort {
+export interface ExecPort extends INodePort {}
+
+export interface ParamPort extends INodePort {
   type: string;
-  label: PortLabel;
 }
 
 export function execPort(label: string = 'exec'): ExecPort {
