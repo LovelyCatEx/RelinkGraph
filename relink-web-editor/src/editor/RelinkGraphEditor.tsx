@@ -94,6 +94,7 @@ export interface RelinkGraphEditorProps extends
 {
   initialWorkflow?: IrWorkflow;
   onEditorInitialized?: (ctx: RelinkGraphEditorContext) => void;
+  onInitialRendered?: () => void;
 }
 
 async function renderWorkflow(ctx: RelinkGraphEditorContext, ir: IrWorkflow) {
@@ -339,7 +340,6 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
   );
 
   const [ctx, setCtx] = useState<RelinkGraphEditorContext | null>(null);
-
   useEffect(() => {
     if (!baseCtx) return;
 
@@ -416,7 +416,13 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
 
     if (initialWorkflow) {
       renderWorkflow(ctx, initialWorkflow)
-        .then()
+        .then(() => {
+          if (props.onInitialRendered) {
+            props.onInitialRendered()
+          } else {
+            ctx.autoFitViewport();
+          }
+        })
         .catch(err => {
           console.error(`graph render failed, workflow: ${initialWorkflow.workflowName}`, err);
         });
