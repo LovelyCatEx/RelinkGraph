@@ -4,12 +4,14 @@
  * Use of this source code is governed by the Apache License, Version 2.0,
  * that can be found in the LICENSE file.
  */
-import { StrictMode } from 'react'
+import {createContext, StrictMode} from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
-import {ConfigProvider} from "antd";
+import {ConfigProvider, notification} from "antd";
 import {registerAllKotlinModules} from "kotlin-ts";
+import type {NotificationInstance} from "antd/lib/notification/interface";
+import * as React from "react";
 
 registerAllKotlinModules();
 
@@ -17,8 +19,21 @@ const cssVar = (varName: string) => getComputedStyle(document.documentElement)
   .getPropertyValue(varName)
   .trim()
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+export const NotificationContext = createContext<NotificationInstance | null>(null);
+
+export const NotificationContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [api, contextHolder] = notification.useNotification();
+
+  return (
+    <NotificationContext.Provider value={api}>
+      {contextHolder}
+      {children}
+    </NotificationContext.Provider>
+  );
+};
+
+function Root() {
+  return <StrictMode>
     <ConfigProvider
       theme={{
         components: {
@@ -60,7 +75,13 @@ createRoot(document.getElementById('root')!).render(
         }
       }}
     >
-      <App />
+      <NotificationContextProvider>
+        <App />
+      </NotificationContextProvider>
     </ConfigProvider>
-  </StrictMode>,
+  </StrictMode>;
+}
+
+createRoot(document.getElementById('root')!).render(
+  <Root />,
 )

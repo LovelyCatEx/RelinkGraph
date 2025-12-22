@@ -56,6 +56,9 @@ importers:
       rete-react-plugin:
         specifier: ^2.1.0
         version: 2.1.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rete-area-plugin@2.1.5(rete@2.0.6))(rete-render-utils@2.0.3(rete-area-plugin@2.1.5(rete@2.0.6))(rete@2.0.6))(rete@2.0.6)(styled-components@6.1.19(react-dom@19.2.3(react@19.2.3))(react@19.2.3))
+      rete-readonly-plugin:
+        specifier: ^2.0.2
+        version: 2.0.2(rete-area-plugin@2.1.5(rete@2.0.6))(rete-connection-plugin@2.0.5(rete-area-plugin@2.1.5(rete@2.0.6))(rete@2.0.6))(rete@2.0.6)
       rete-render-utils:
         specifier: ^2.0.3
         version: 2.0.3(rete-area-plugin@2.1.5(rete@2.0.6))(rete@2.0.6)
@@ -1724,6 +1727,13 @@ packages:
       rete-area-plugin: ^2.0.0
       rete-render-utils: ^2.0.0
       styled-components: ^5.3.6 || ^6
+
+  rete-readonly-plugin@2.0.2:
+    resolution: {integrity: sha512-+ap6vSzXxOOmopoZhwJQe2Qh82jIG7Nki5wBQnKvN572QSkP0Yr/KSvOMDCh89a+gJz1DRAIjzbhio3sCAhZ9g==}
+    peerDependencies:
+      rete: ^2.0.1
+      rete-area-plugin: ^2.0.0
+      rete-connection-plugin: ^2.0.0
 
   rete-render-utils@2.0.3:
     resolution: {integrity: sha512-Oz4W2PNayHocRvlzadb5BCNf+tDzJ8RhTwB3ucBPCdCLKZ974wWDiTSCRfA287L2hmHVzRfBdyAwC03K9eP+4g==}
@@ -3608,6 +3618,13 @@ snapshots:
       rete-render-utils: 2.0.3(rete-area-plugin@2.1.5(rete@2.0.6))(rete@2.0.6)
       styled-components: 6.1.19(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       usehooks-ts: 3.1.1(react@19.2.3)
+
+  rete-readonly-plugin@2.0.2(rete-area-plugin@2.1.5(rete@2.0.6))(rete-connection-plugin@2.0.5(rete-area-plugin@2.1.5(rete@2.0.6))(rete@2.0.6))(rete@2.0.6):
+    dependencies:
+      '@babel/runtime': 7.28.4
+      rete: 2.0.6
+      rete-area-plugin: 2.1.5(rete@2.0.6)
+      rete-connection-plugin: 2.0.5(rete-area-plugin@2.1.5(rete@2.0.6))(rete@2.0.6)
 
   rete-render-utils@2.0.3(rete-area-plugin@2.1.5(rete@2.0.6))(rete@2.0.6):
     dependencies:

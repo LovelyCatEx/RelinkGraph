@@ -27,6 +27,11 @@
     --secondary-container: #e1e0f9;
     --on-secondary-container: #181a2c;
 
+    --tertiary-color: #ae849e;
+    --on-tertiary: #ffffff;
+    --tertiary-container: #ffd8ee;
+    --on-tertiary-container: #3a0030;
+
     --background-color: #2B2D30;
     --background-container: rgba(29, 29, 29, 0.5);
     --on-background-color: #fffbff;

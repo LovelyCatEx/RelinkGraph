@@ -34,6 +34,7 @@ import {
   Presets as HistoryPresets
 } from "rete-history-plugin";
 import {SquareFunction} from "lucide-react";
+import { ReadonlyPlugin } from "rete-readonly-plugin";
 
 export interface GraphEditorContext<
   S extends BaseGraphSocket,
@@ -51,6 +52,8 @@ export interface GraphEditorContext<
   historyUndo: () => Promise<void>;
   historyRedo: () => Promise<void>;
   getSelectedNodes: () => N[];
+  enableReadonly: () => void;
+  disableReadonly: () => void;
   destroy(): void;
 }
 
@@ -132,6 +135,7 @@ async function createBaseGraphEditor<
   const arrange = new AutoArrangePlugin<SCHEMES>();
   const selector = AreaExtensions.selector();
   const history = new HistoryPlugin<SCHEMES>();
+  const readonly = new ReadonlyPlugin<SCHEMES>();
 
   AreaExtensions.selectableNodes(area, selector, {
     accumulating: AreaExtensions.accumulateOnCtrl(),
@@ -309,14 +313,16 @@ async function createBaseGraphEditor<
   history.addPreset(HistoryPresets.classic.setup());
 
   editor.use(area);
+  editor.use(readonly.root);
   area.use(connection);
   area.use(render);
   area.use(arrange);
   area.use(history);
+  area.use(readonly.area);
 
   AreaExtensions.simpleNodesOrder(area);
 
-  const ctx = {
+  const ctx: GraphEditorContext<S, N, C, SCHEMES> = {
     rete: {
       editor: editor,
       area: area,
@@ -339,6 +345,12 @@ async function createBaseGraphEditor<
         .getNodes()
         .filter((node) => node?.selected ?? null)
         .filterNotNull()
+    },
+    enableReadonly: () => {
+      readonly.enable();
+    },
+    disableReadonly: () => {
+      readonly.disable();
     },
     destroy: () => {
       area.destroy();

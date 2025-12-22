@@ -6,7 +6,12 @@
  */
 import './App.css'
 import {RelinkGraphEditor} from "@/editor/RelinkGraphEditor.tsx";
-import {IR_GRAPH_SERIALIZATION_MOCK, type IrBaseNode, type IrPortEdge} from "@/types/relink-graph.types.ts";
+import {
+  IR_GRAPH_SERIALIZATION_MOCK,
+  type IrBaseNode,
+  type IrPortEdge,
+  type NodeRole
+} from "@/types/relink-graph.types.ts";
 import {
   Breadcrumb,
   Button,
@@ -16,7 +21,7 @@ import {
   Input,
   type MenuProps,
   Splitter,
-  Tabs,
+  Tabs, Tooltip,
   Tree
 } from "antd";
 import {
@@ -34,13 +39,13 @@ import {
   EditOutlined,
   ExportOutlined,
   ForkOutlined,
-  FunctionOutlined,
+  FunctionOutlined, LockOutlined,
   LogoutOutlined,
   MenuOutlined,
   PartitionOutlined,
   PlusOutlined,
   SaveOutlined,
-  SwapRightOutlined
+  SwapRightOutlined, UnlockOutlined
 } from "@ant-design/icons";
 import {createStyles} from "antd-style";
 import {type ReactElement, startTransition, useEffect, useState} from "react";
@@ -76,35 +81,82 @@ interface TreeNodeData {
   data?: any;
 }
 
+const useSplitterStyles = createStyles(({ token }) => ({
+  dragger: {
+    '&::before': {
+      backgroundColor: 'transparent !important',
+    },
+    '&:hover::before': {
+      border: `1px dashed ${token.colorPrimary}`,
+    },
+  },
+  draggerActive: {
+    '&::before': {
+      border: `1px dashed ${token.colorPrimary}`,
+    },
+  },
+  collapsibleIcon: {
+    fontSize: 24,
+    color: token.colorBorder,
+
+    '&:hover': {
+      color: token.colorPrimary,
+    },
+  },
+}));
+
+const contextMenuStyles: DropdownProps['styles'] = {
+  root: {
+    border: '1px solid var(--secondary-color-a-50)',
+    borderRadius: '8px',
+  },
+  item: {
+    minWidth: '256px',
+    padding: '0.5rem 1rem',
+    fontSize: '1em',
+  },
+  itemTitle: {
+    fontWeight: '500',
+  },
+  itemIcon: {
+    fontSize: '1em',
+    // color: 'var(--primary-color)',
+    marginRight: '1em',
+  },
+  itemContent: {
+    backgroundColor: 'transparent',
+  },
+};
+
+const getNodeIcon = (nodeRole: NodeRole) => {
+  if (nodeRole == 'ACTION') {
+    return <FunctionOutlined />;
+  } else if (nodeRole == 'PURE') {
+    return <CalculatorOutlined />;
+  } else if (nodeRole == 'SOURCE') {
+    return <BulbOutlined />;
+  } else if (nodeRole == 'SINK') {
+    return <LogoutOutlined />;
+  } else if (nodeRole == 'CONTROL') {
+    return <PartitionOutlined />
+  } else {
+    return <AppstoreOutlined />;
+  }
+}
+
 function App() {
-  const useStyles = createStyles(({ token }) => ({
-    dragger: {
-      '&::before': {
-        backgroundColor: 'transparent !important',
-      },
-      '&:hover::before': {
-        border: `1px dashed ${token.colorPrimary}`,
-      },
-    },
-    draggerActive: {
-      '&::before': {
-        border: `1px dashed ${token.colorPrimary}`,
-      },
-    },
-    collapsibleIcon: {
-      fontSize: 24,
-      color: token.colorBorder,
+  const { styles: splitterStyles } = useSplitterStyles();
 
-      '&:hover': {
-        color: token.colorPrimary,
-      },
-    },
-  }));
-
-  const { styles } = useStyles();
-
-  // @ts-ignore
   const [editorContext, setEditorContext] = useState<RelinkGraphEditorContext | null>(null);
+
+  const [isEditorReadonly, setEditorReadonly] = useState<boolean>(false);
+  useEffect(() => {
+    if (isEditorReadonly) {
+      editorContext?.enableReadonly?.();
+    } else {
+      editorContext?.disableReadonly?.();
+    }
+  }, [isEditorReadonly]);
 
   const [nodes, setNodes] = useState<BaseRelinkGraphNode[]>([]);
   const [connections, setConnections] = useState<RelinkGraphConnection[]>([]);
@@ -199,21 +251,7 @@ function App() {
                     title: node.nodeId,
                     key: generateWorkflowNodeTreeItemKey(currentGraph.graphName, workflow.workflowName, node.nodeId),
                     data: node,
-                    icon: (() => {
-                      if (node.nodeRole == 'ACTION') {
-                        return <FunctionOutlined />;
-                      } else if (node.nodeRole == 'PURE') {
-                        return <CalculatorOutlined />;
-                      } else if (node.nodeRole == 'SOURCE') {
-                        return <BulbOutlined />;
-                      } else if (node.nodeRole == 'SINK') {
-                        return <LogoutOutlined />;
-                      } else if (node.nodeRole == 'CONTROL') {
-                        return <PartitionOutlined />
-                      } else {
-                        return <AppstoreOutlined />;
-                      }
-                    })()
+                    icon: getNodeIcon(node.nodeRole),
                   }
                 })
               },
@@ -306,29 +344,6 @@ function App() {
     }
   };
 
-  const contextMenuStyles: DropdownProps['styles'] = {
-    root: {
-      border: '1px solid var(--secondary-color-a-50)',
-      borderRadius: '8px',
-    },
-    item: {
-      minWidth: '256px',
-      padding: '0.5rem 1rem',
-      fontSize: '1em',
-    },
-    itemTitle: {
-      fontWeight: '500',
-    },
-    itemIcon: {
-      fontSize: '1em',
-      // color: 'var(--primary-color)',
-      marginRight: '1em',
-    },
-    itemContent: {
-      backgroundColor: 'transparent',
-    },
-  };
-
   return (
     <div className="h-screen w-full font-sans overflow-hidden select-none bg-[var(--background-color)] text-[var(--on-background-color)]">
       <div className="h-full bg-transparent flex flex-col">
@@ -343,9 +358,9 @@ function App() {
             </span>
           </div>
 
-          <div className="flex items-center p-0.5 rounded-xl border border-white/10 space-x-2">
-            <Button type="text" className="h-8 w-8 flex items-center justify-center" icon={<SaveOutlined />} />
-            <Button type="text" className="h-8 w-8 flex items-center justify-center" icon={<ExportOutlined />} />
+          <div className="flex items-center p-0.5 rounded-xl border border-white/10 space-x-2 pl-2 pr-2">
+            <Button type="text" icon={<SaveOutlined />} />
+            <Button type="text" icon={<ExportOutlined />} />
           </div>
 
           <div className="flex items-center gap-2">
@@ -359,10 +374,10 @@ function App() {
         </div>
 
         <Splitter
-          classNames={{ dragger: { default: styles.dragger, active: styles.draggerActive } }}
+          classNames={{ dragger: { default: splitterStyles.dragger, active: splitterStyles.draggerActive } }}
           collapsibleIcon={{
-            start: <CaretLeftOutlined className={styles.collapsibleIcon} />,
-            end: <CaretRightOutlined className={styles.collapsibleIcon} />,
+            start: <CaretLeftOutlined className={splitterStyles.collapsibleIcon} />,
+            end: <CaretRightOutlined className={splitterStyles.collapsibleIcon} />,
           }}
         >
           {/* Left Panel */}
@@ -511,7 +526,16 @@ function App() {
                 ...[
                   selectedNodes.length > 0 ?
                   {
-                    title: selectedNodes.map((node) => node.node.nodeId).join(' & '),
+                    title: <span>{selectedNodes.mapIndexed((index, node) => (
+                      <>
+                        {getNodeIcon(node.node.nodeRole)}
+                        &nbsp;
+                        <span>{node.node.nodeId}</span>
+                        {index != selectedNodes.length - 1 && (
+                          <span> | </span>
+                        )}
+                      </>
+                    ))}</span>,
                   } : undefined
                 ].filterNotNull()
               ]}
@@ -522,6 +546,16 @@ function App() {
 
           <div className="flex items-center gap-2">
             <Divider orientation="vertical" className="transform translate-y-[2px]" />
+            <Tooltip title={!isEditorReadonly ? "Make editor read-only" : "Make editor editable"} placement="left">
+              <Button
+                type="text"
+                size="small"
+                icon={isEditorReadonly ? <LockOutlined /> : <UnlockOutlined />}
+                onClick={() => {
+                  setEditorReadonly(!isEditorReadonly);
+                }}
+              />
+            </Tooltip>
           </div>
         </div>
       </div>

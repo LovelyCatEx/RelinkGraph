@@ -10,7 +10,7 @@ import type {RelinkGraphSocket} from "@/editor/socket";
 import type {BaseRelinkGraphNode} from "@/editor/node/BaseRelinkGraphNode.ts";
 import {RelinkGraphConnection, type RelinkGraphEditorContext, type RelinkGraphSchemes} from "@/editor/types";
 import * as React from "react";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {applyRelinkGraphEditirAreaBackground} from "@/editor/ui/background.ts";
 import {getConnectionSockets} from "@/rete/utils/socket-utils.ts";
 import {ExecSocket} from "@/editor/socket/ExecSocket.ts";
@@ -19,11 +19,13 @@ import {ParamConnectionComponent} from "@/editor/ui/connection/ParamConnection.t
 import {ParamSocket} from "@/editor/socket/ParamSocket.ts";
 import {
   execPort,
-  irControlNode, type IrPortEdge,
+  irControlNode,
+  type IrPortEdge,
   irPureNode,
   irSinkNode,
   irSourceNode,
-  type IrWorkflow, type NodeId,
+  type IrWorkflow,
+  type NodeId,
   paramPort
 } from "@/types/relink-graph.types.ts";
 import {ActionRelinkGraphNode} from "@/editor/node/ActionRelinkGraphNode.ts";
@@ -53,7 +55,8 @@ import {
 } from "@/types/relink-graph-std.types.ts";
 import {RBoolean, RInt} from "@/types/relink-ir.types.ts";
 import {Button, Divider, Tooltip} from "antd";
-import {ApartmentOutlined, FullscreenExitOutlined, RedoOutlined, UndoOutlined} from "@ant-design/icons";
+import {ApartmentOutlined, FullscreenExitOutlined, LockOutlined, RedoOutlined, UndoOutlined} from "@ant-design/icons";
+import {NotificationContext} from "@/main.tsx";
 
 // @ts-ignore
 function openContextMenuAt(
@@ -145,7 +148,11 @@ async function renderWorkflow(ctx: RelinkGraphEditorContext, ir: IrWorkflow) {
 }
 
 export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
+  const notification = useContext(NotificationContext);
+
   const { initialWorkflow, className, onEditorInitialized } = props;
+
+  const [isEditorReadonly, setEditorReadonly] = useState<boolean>(false);
 
   const [ref, baseCtx] = useRete(
     useCreateReteBaseGraphEditor<
@@ -268,7 +275,7 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
             ],
           ]],
           ['Control', [
-            ['If', () => new ControlRelinkGraphNode(
+            ['If Else', () => new ControlRelinkGraphNode(
                 irControlNode(
                   StdNodeType.IF,
                   [execPort()],
@@ -385,6 +392,14 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
 
     const integratedCtx: RelinkGraphEditorContext = {
       ...baseCtx,
+      enableReadonly: () => {
+        setEditorReadonly(true);
+        baseCtx.enableReadonly();
+      },
+      disableReadonly: () => {
+        setEditorReadonly(false);
+        baseCtx.disableReadonly();
+      },
       getNodeById: getNodeById,
       getConnectionByEdge: getConnectionByEdge,
       deleteNodeById: deleteNodeById,
@@ -458,6 +473,13 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
     });
   }, [ctx]);
 
+  const onReadonlyRejectedEvent = () => {
+    notification?.['warning']?.({
+      title: 'Readonly Editor',
+      description: 'Cannot edit the graph when editor in readonly mode',
+    });
+  }
+
   return (
     <div className={className} >
       <div className="w-full h-full flex-1" ref={ref} />
@@ -469,8 +491,11 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
             <Button
               type="text"
               icon={<UndoOutlined />}
-              className="h-8 px-3 flex items-center gap-2"
               onClick={() => {
+                if (isEditorReadonly) {
+                  onReadonlyRejectedEvent();
+                  return;
+                }
                 ctx?.historyUndo();
               }}
             />
@@ -480,8 +505,11 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
             <Button
               type="text"
               icon={<RedoOutlined />}
-              className="h-8 px-3 flex items-center gap-2"
               onClick={() => {
+                if (isEditorReadonly) {
+                  onReadonlyRejectedEvent();
+                  return;
+                }
                 ctx?.historyRedo();
               }}
             />
@@ -493,7 +521,6 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
             <Button
               type="text"
               icon={<FullscreenExitOutlined />}
-              className="h-8 px-3 flex items-center gap-2"
               onClick={() => {
                 ctx?.autoFitViewport();
               }}
@@ -508,8 +535,11 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
             <Button
               type="text"
               icon={<ApartmentOutlined />}
-              className="h-8 px-3 flex items-center gap-2"
               onClick={() => {
+                if (isEditorReadonly) {
+                  onReadonlyRejectedEvent();
+                  return;
+                }
                 ctx?.autoArrangeNodes(true);
               }}
             >
@@ -519,13 +549,31 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
         </div>
       </div>
 
+      {/* Top-Right Floating Content */}
+      <div className="absolute right-4 top-4">
+        {isEditorReadonly && (
+          <div className="backdrop-blur-sm rounded-lg border border-white/10 flex items-center font-mono text-[var(--primary-color)]">
+            <Tooltip title="The editor is in readonly mode" placement="bottom">
+              <Button
+                type="text"
+                icon={<LockOutlined />}
+              >
+                Readonly
+              </Button>
+            </Tooltip>
+          </div>
+        )}
+      </div>
+
+
       {/* Bottom Float Panel */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 group">
         <div className="backdrop-blur-sm px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-4 font-mono text-[var(--primary-color)] hover:bg-[var(--primary-color-a-25)] transition-all duration-100">
-          <span>Position: {mousePos?.x}, {mousePos?.y}</span>
-          <span>Scale: {zoom?.toFixed(2)}x</span>
+          <span>Position: {mousePos?.x ?? '0'}, {mousePos?.y ?? '0'}</span>
+          <span>Scale: {zoom?.toFixed(2) ?? '1'}x</span>
         </div>
       </div>
-    </div>
+
+     </div>
   )
 }
