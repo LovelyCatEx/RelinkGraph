@@ -567,7 +567,7 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
 
   return (
     <div className={className} >
-      <div className="w-full h-full flex-1" ref={ref} />
+      <div className="w-full h-full flex-1 cursor-default active:cursor-grabbing" ref={ref} />
 
       {/* Top Float Tools */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 flex group text-[var(--secondary-color)]">
