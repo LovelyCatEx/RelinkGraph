@@ -54,6 +54,7 @@ import {type ReactElement, startTransition, useContext, useEffect, useState} fro
 import type {BaseRelinkGraphNode} from "@/editor/node/BaseRelinkGraphNode.ts";
 import type {RelinkGraphConnection, RelinkGraphEditorContext} from "@/editor/types";
 import {NotificationContext} from "@/main.tsx";
+import {ClockComponent} from "@/components/ClockComponent.tsx";
 
 type TreeContextMenuOperationType =
   'new-graph'
@@ -558,6 +559,7 @@ function App() {
 
           <div className="flex items-center gap-2">
             <Divider orientation="vertical" className="transform translate-y-[2px]" />
+
             <Tooltip title={!isEditorReadonly ? "Make editor read-only" : "Make editor editable"} placement="left">
               <Button
                 type="text"
@@ -568,6 +570,10 @@ function App() {
                 }}
               />
             </Tooltip>
+
+            <Divider orientation="vertical" className="transform translate-y-[2px]" />
+
+            <ClockComponent />
           </div>
         </div>
       </div>
