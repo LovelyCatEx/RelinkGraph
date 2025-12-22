@@ -60,6 +60,9 @@ function Root() {
           colorBgContainer: cssVar('--background-container'),
           colorBgElevated: cssVar('--background-color'),
 
+          // ==== Tooltips Background ====
+          colorBgSpotlight: cssVar('--background-color'),
+
           // ===== Border =====
           colorBorder: 'transparent',
           colorBorderSecondary: cssVar('--secondary-color-a-25'),
