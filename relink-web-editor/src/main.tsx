@@ -41,6 +41,7 @@ function Root() {
             itemColor: cssVar('--on-background-color'),
             linkColor: cssVar('--secondary-color'),
             lastItemColor: cssVar('--primary-color'),
+            separatorColor: cssVar('--secondary-color'),
           }
         },
         token: {

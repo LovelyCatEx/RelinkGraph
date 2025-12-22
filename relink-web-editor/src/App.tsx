@@ -21,14 +21,14 @@ import {
   Input,
   type MenuProps,
   Splitter,
-  Tabs, Tooltip,
+  Tabs,
+  Tooltip,
   Tree
 } from "antd";
 import {
   ApartmentOutlined,
   AppstoreAddOutlined,
   AppstoreOutlined,
-  BranchesOutlined,
   BuildOutlined,
   BulbOutlined,
   CalculatorOutlined,
@@ -39,13 +39,15 @@ import {
   EditOutlined,
   ExportOutlined,
   ForkOutlined,
-  FunctionOutlined, LockOutlined,
+  FunctionOutlined,
+  LockOutlined,
   LogoutOutlined,
   MenuOutlined,
   PartitionOutlined,
   PlusOutlined,
   SaveOutlined,
-  SwapRightOutlined, UnlockOutlined
+  SwapRightOutlined,
+  UnlockOutlined
 } from "@ant-design/icons";
 import {createStyles} from "antd-style";
 import {type ReactElement, startTransition, useEffect, useState} from "react";
@@ -235,7 +237,7 @@ function App() {
             title: workflow.workflowName,
             key: workflowTreeItemKey,
             data: workflow,
-            icon: <BranchesOutlined />,
+            icon: <PartitionOutlined />,
             children: [
               {
                 type: 'nodes',
@@ -518,10 +520,10 @@ function App() {
             <Breadcrumb
               items={[
                 {
-                  title: currentGraph.graphName,
+                  title: <span><ApartmentOutlined />&nbsp;{currentGraph.graphName}</span>,
                 },
                 {
-                  title: currentWorkflow.workflowName,
+                  title: <span><PartitionOutlined />&nbsp;{currentWorkflow.workflowName}</span>,
                 },
                 ...[
                   selectedNodes.length > 0 ?
