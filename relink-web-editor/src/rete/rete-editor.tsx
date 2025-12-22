@@ -54,7 +54,12 @@ export interface CreateGraphEditorPropsEvents<
   N extends BaseGraphNode<S>,
   C extends BaseGraphNodeConnection<S, N, N>
 > {
-  onInvalidConnection?: () => void,
+  onInvalidConnection?: (
+    reason: 'readonly'
+      | 'incapable-socket'
+      | 'already-connected'
+      | 'additional-validation-failed'
+  ) => void,
   onNodeSelected?: (node: N) => void,
   onSelectedNodesChanged?: (nodes: N[]) => void,
   onNodesChanged?: (type: 'created' | 'removed', currentNodes: N[]) => void,
@@ -223,6 +228,12 @@ async function createBaseGraphEditor<
 
         if (!source || !target || from === to) return false;
 
+        if (readonly.enabled) {
+          connection.drop();
+          props.events?.onInvalidConnection?.('readonly');
+          return false;
+        }
+
         const sourceNode = editor.getNode(source.nodeId)!;
         const targetNode = editor.getNode(target.nodeId)!;
 
@@ -237,7 +248,7 @@ async function createBaseGraphEditor<
         );
 
         if (!sockets.source!.isCompatibleWith(sockets.target!)) {
-          props.events?.onInvalidConnection?.();
+          props.events?.onInvalidConnection?.('incapable-socket');
           connection.drop();
           return false;
         }
@@ -252,6 +263,7 @@ async function createBaseGraphEditor<
 
         // Already connected before
         if (connected) {
+          props.events?.onInvalidConnection?.('already-connected');
           connection.drop();
           return false;
         }
@@ -266,7 +278,7 @@ async function createBaseGraphEditor<
             sockets.target!,
             target.key)
           ) {
-            props.events?.onInvalidConnection?.();
+            props.events?.onInvalidConnection?.('additional-validation-failed');
             connection.drop();
             return false;
           }
@@ -380,6 +392,20 @@ async function createBaseGraphEditor<
   });
 
   editor.addPipe((context) => {
+    if (context.type == 'connectioncreate') {
+      // Pre Connection Create Event
+      if (readonly.enabled) {
+        connection.drop();
+        return;
+      }
+    } else if (context.type == 'connectionremove') {
+      // Pre Connection Remove Event
+      if (readonly.enabled) {
+        connection.drop();
+        return;
+      }
+    }
+
     if (context.type == 'nodecreated') {
       props?.events?.onNodeCreated?.(context.data);
       props?.events?.onNodesChanged?.('created', editor.getNodes());
