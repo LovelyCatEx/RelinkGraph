@@ -33,6 +33,7 @@ import {
   HistoryPlugin,
   Presets as HistoryPresets
 } from "rete-history-plugin";
+import {SquareFunction} from "lucide-react";
 
 export interface GraphEditorContext<
   S extends BaseGraphSocket,
@@ -186,7 +187,7 @@ async function createBaseGraphEditor<
       main: () => props.render?.contextMenu?.main
         ? props.render?.contextMenu?.main?.()
         : ContextMenuContainer({
-          className: "p-2 bg-white rounded-[.5rem] overflow-hidden shadow-2xl min-w-[256px]"
+          className: "p-2 bg-white rounded-[.5rem] shadow-2xl min-w-[256px]"
         }),
       item: (item) => props.render?.contextMenu?.item
         ? props.render?.contextMenu?.item?.(item)
@@ -201,8 +202,18 @@ async function createBaseGraphEditor<
             "bg-white text-black group " +
             "hover:bg-red-400 hover:text-white transition cursor-pointer"
         }),
-      subitems: (item) => props.render?.contextMenu?.subitems ? props.render?.contextMenu?.subitems?.(item) : ContextMenuSubItem(),
-      common: () => props.render?.contextMenu?.common ? props.render?.contextMenu?.common?.() : Presets.contextMenu.Subitems
+      subitems: (item) => props.render?.contextMenu?.subitems
+        ? props.render?.contextMenu?.subitems?.(item)
+        : ContextMenuSubItem({
+          className: "p-2 rounded-[.5rem] shadow-2xl min-w-[256px] " +
+            "bg-white text-black border border-white/10"
+        }),
+      common: () => props.render?.contextMenu?.common
+        ? props.render?.contextMenu?.common?.()
+        : () => <div className="p-2 flex flex-row items-center space-x-2 bg-white text-black">
+          <SquareFunction size="20" />
+          <p>Create Node</p>
+        </div>
     },
     delay: props.contextMenu?.renderDelay ?? 500
   }));

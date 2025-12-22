@@ -19,11 +19,11 @@ import {ParamConnectionComponent} from "@/editor/ui/connection/ParamConnection.t
 import {ParamSocket} from "@/editor/socket/ParamSocket.ts";
 import {
   execPort,
-  irControlNode,
+  irControlNode, type IrPortEdge,
   irPureNode,
   irSinkNode,
   irSourceNode,
-  type IrWorkflow,
+  type IrWorkflow, type NodeId,
   paramPort
 } from "@/types/relink-graph.types.ts";
 import {ActionRelinkGraphNode} from "@/editor/node/ActionRelinkGraphNode.ts";
@@ -198,26 +198,27 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
         },
         contextMenu: {
           main: () => ContextMenuContainer({
-            className: "p-2 rounded-[.5rem] overflow-hidden shadow-2xl min-w-[256px] " +
-              "bg-[var(--background-color)] text-[var(--on-background)] border border-white/10"
+            className: "p-2 rounded-[.5rem] shadow-2xl min-w-[256px] " +
+              "bg-transparent text-[var(--on-background)] border border-white/10 backdrop-blur-md"
           }),
           item: (item) => ContextMenuItem(item, {
             className: " flex flex-row justify-between items-center " +
               "rounded-[.25rem] pt-2 pb-2 pl-4 pr-4 " +
-              "bg-[var(--background-color)] text-[var(--on-background)] group " +
+              "bg-transparent text-[var(--on-background)] group " +
               "hover:bg-[var(--primary-color-a-75)] hover:text-[var(--on-primary)] transition cursor-pointer"
           }, {
             className: " flex flex-row justify-between items-center " +
               "rounded-[.25rem] pt-2 pb-2 pl-4 pr-4 " +
-              "bg-[var(--background-color)] text-[var(--on-background)] group " +
+              "bg-transparent text-[var(--on-background)] group " +
               "hover:bg-red-500/40 hover:text-white transition cursor-pointer"
           }),
+          // CSS Styles should be same with main
           subitems: (_) => ContextMenuSubItem({
-            className: "p-2 rounded-[.5rem] overflow-hidden shadow-2xl min-w-[256px] " +
+            className: "p-2 rounded-[.5rem] shadow-2xl min-w-[256px] " +
               "bg-[var(--background-color)] text-[var(--on-background)] border border-white/10"
           }),
           common: () => () =>
-            <div className="p-2 flex flex-row items-center space-x-2 bg-[var(--background-color)] text-[var(--on-background)]">
+            <div className="p-2 flex flex-row items-center space-x-2 bg-transparent text-[var(--on-background)]">
               <SquareFunction size="20" />
               <p>Create Node</p>
             </div>
@@ -335,13 +336,59 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
   useEffect(() => {
     if (!baseCtx) return;
 
+    const getNodeById = (nodeId: NodeId) => {
+      return baseCtx.rete.editor
+        .getNodes()
+        .find((it) => it.node.nodeId == nodeId)
+    }
+
+    const getConnectionByEdge = (edge: IrPortEdge) => {
+      const fromNode = getNodeById(edge.from);
+      const toNode = getNodeById(edge.to);
+
+      if (!fromNode || !toNode) {
+        return undefined;
+      }
+
+      return baseCtx.rete.editor
+        .getConnections()
+        .find((conn) => {
+          return conn.source == fromNode.id && conn.target == toNode.id;
+        });
+    }
+
+    const deleteNodeById = async (nodeId: NodeId) => {
+      const node = getNodeById(nodeId);
+      if (!node) return undefined;
+
+      await baseCtx.rete.editor.removeNode(node.id);
+
+      // Get associated connections
+      const connections = baseCtx.rete.editor
+        .getConnections()
+        .filter((conn) => conn.source == node.id || conn.target == node.id);
+
+      // Delete associated connections
+      for (const conn of connections) {
+        await baseCtx.rete.editor.removeConnection(conn.id);
+      }
+
+      return node;
+    }
+
+    const deleteConnectionByEdge = async (edge: IrPortEdge) => {
+      const e = getConnectionByEdge(edge);
+      if (!e) return undefined;
+      await baseCtx.rete.editor.removeConnection(e.id);
+      return e;
+    }
+
     const integratedCtx: RelinkGraphEditorContext = {
       ...baseCtx,
-      getNodeById: (nodeId) => {
-        return baseCtx.rete.editor
-          .getNodes()
-          .find((it) => it.node.nodeId == nodeId)
-      }
+      getNodeById: getNodeById,
+      getConnectionByEdge: getConnectionByEdge,
+      deleteNodeById: deleteNodeById,
+      deleteConnectionByEdge: deleteConnectionByEdge,
     };
 
     setCtx(integratedCtx);

@@ -32,8 +32,7 @@
     --on-background-color: #fffbff;
     --on-background-container: #2B2D30;
 
-    --font-size-small: 0.9em;
-    --font-size-normal: 1em;
+    --border-color: color-mix(in oklab, #ffffff 6%, transparent);
 }
 
 #root {

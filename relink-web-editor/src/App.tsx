@@ -6,8 +6,19 @@
  */
 import './App.css'
 import {RelinkGraphEditor} from "@/editor/RelinkGraphEditor.tsx";
-import {IR_GRAPH_SERIALIZATION_MOCK, type IrPortEdge} from "@/types/relink-graph.types.ts";
-import {Button, Dropdown, type DropdownProps, Input, type MenuProps, Splitter, Tabs, Tree} from "antd";
+import {IR_GRAPH_SERIALIZATION_MOCK, type IrBaseNode, type IrPortEdge} from "@/types/relink-graph.types.ts";
+import {
+  Breadcrumb,
+  Button,
+  Divider,
+  Dropdown,
+  type DropdownProps,
+  Input,
+  type MenuProps,
+  Splitter,
+  Tabs,
+  Tree
+} from "antd";
 import {
   ApartmentOutlined,
   AppstoreAddOutlined,
@@ -17,13 +28,17 @@ import {
   BulbOutlined,
   CalculatorOutlined,
   CaretLeftOutlined,
-  CaretRightOutlined, DeleteOutlined, DownSquareOutlined, EditOutlined,
+  CaretRightOutlined,
+  DeleteOutlined,
+  DownSquareOutlined,
+  EditOutlined,
   ExportOutlined,
   ForkOutlined,
   FunctionOutlined,
   LogoutOutlined,
   MenuOutlined,
-  PartitionOutlined, PlusOutlined,
+  PartitionOutlined,
+  PlusOutlined,
   SaveOutlined,
   SwapRightOutlined
 } from "@ant-design/icons";
@@ -32,12 +47,33 @@ import {type ReactElement, startTransition, useEffect, useState} from "react";
 import type {BaseRelinkGraphNode} from "@/editor/node/BaseRelinkGraphNode.ts";
 import type {RelinkGraphConnection, RelinkGraphEditorContext} from "@/editor/types";
 
+type TreeContextMenuOperationType =
+  'new-graph'
+  | 'rename-graph'
+  | 'new-workflow'
+  | 'rename-workflow'
+  | 'delete-workflow'
+  | 'expand-nodes'
+  | 'expand-edges'
+  | 'delete-node'
+  | 'delete-edge';
+
+type TreeContextMenuType =
+  'graph'
+  | 'workflow'
+  | 'nodes'
+  | 'node'
+  | 'edges'
+  | 'edge'
+  | string;
+
 interface TreeNodeData {
   key: string;
   title: string | ReactElement;
   icon: ReactElement;
   children?: TreeNodeData[];
-  type: string;
+  type: TreeContextMenuType;
+  data?: any;
 }
 
 function App() {
@@ -110,6 +146,7 @@ function App() {
         title: currentGraph.graphName,
         key: generateGraphTreeItemKey(currentGraph.graphName),
         icon: <ApartmentOutlined />,
+        data: currentGraph,
         children: currentGraph.workflows.map((workflow) => {
           const workflowTreeItemKey = generateWorkflowTreeItemKey(currentGraph.graphName, workflow.workflowName);
 
@@ -122,10 +159,18 @@ function App() {
           // Determine nodes and edges to rendered
           const renderNodes = (isCurrentWorkflow ? nodes.map((e) => e.node) : workflow.nodes);
           const renderEdges = (isCurrentWorkflow
-              ? connections.map((e) => {
+              ? connections.mapNotNull((e) => {
+                const fronNode = nodes.find((it) => it.id == e.source);
+                const toNode = nodes.find((it) => it.id == e.target);
+
+                // This connection is not available
+                if (!fronNode || !toNode) {
+                  return null;
+                }
+
                 return {
-                  from: nodes.find((it) => it.id == e.source)!.node.nodeId,
-                  to: nodes.find((it) => it.id == e.target)!.node.nodeId,
+                  from: fronNode.node.nodeId,
+                  to: toNode.node.nodeId,
                   fromPort: e.sourceOutput,
                   toPort: e.targetInput
                 } as IrPortEdge;
@@ -137,6 +182,7 @@ function App() {
             type: 'workflow',
             title: workflow.workflowName,
             key: workflowTreeItemKey,
+            data: workflow,
             icon: <BranchesOutlined />,
             children: [
               {
@@ -152,6 +198,7 @@ function App() {
                     type: 'node',
                     title: node.nodeId,
                     key: generateWorkflowNodeTreeItemKey(currentGraph.graphName, workflow.workflowName, node.nodeId),
+                    data: node,
                     icon: (() => {
                       if (node.nodeRole == 'ACTION') {
                         return <FunctionOutlined />;
@@ -187,6 +234,7 @@ function App() {
                       workflow.workflowName,
                       edge.from + "," + edge.fromPort + "," + edge.to + "," + edge.toPort
                     ),
+                    data: edge,
                     icon: <SwapRightOutlined />
                   }
                 })
@@ -235,7 +283,7 @@ function App() {
 
     if (node.type === 'nodes') {
       return [
-        { key: 'open', label: 'Expand Nodes', icon: <DownSquareOutlined /> },
+        { key: 'expand-nodes', label: 'Expand Nodes', icon: <DownSquareOutlined /> },
       ];
     }
 
@@ -247,7 +295,7 @@ function App() {
 
     if (node.type === 'edges') {
       return [
-        { key: 'open', label: 'Expand Connections', icon: <DownSquareOutlined /> },
+        { key: 'expand-edges', label: 'Expand Connections', icon: <DownSquareOutlined /> },
       ];
     }
 
@@ -285,7 +333,7 @@ function App() {
     <div className="h-screen w-full font-sans overflow-hidden select-none bg-[var(--background-color)] text-[var(--on-background-color)]">
       <div className="h-full bg-transparent flex flex-col">
         {/* Header Container */}
-        <div className="px-6 flex items-center justify-between border-b border-white/5 h-14 shrink-0 shadow-lg z-10 p-4">
+        <div className="px-6 flex items-center justify-between border-b border-[var(--border-color)] h-14 shrink-0 shadow-lg z-10 p-4">
           <div className="flex items-center gap-4">
             <div className="w-8 h-8 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
               <BuildOutlined className="text-white text-lg" />
@@ -319,14 +367,24 @@ function App() {
         >
           {/* Left Panel */}
           <Splitter.Panel defaultSize={320} min={280} max="40%" collapsible>
-            <div className="size-full border-r border-white/5 overflow-hidden flex flex-col text-[var(--on-background-color)]">
+            <div className="size-full border-r border-[var(--border-color)] overflow-hidden flex flex-col text-[var(--on-background-color)]">
               <Dropdown
                 styles={contextMenuStyles}
                 className="size-full min-w-[256px]"
                 menu={{
                   items: getTreeContextMenu(contextNode),
-                  onClick: ({ key }) => {
+                  onClick: async ({ key }) => {
+                    if (!contextNode || !editorContext) return;
+
                     console.log('Operate', key, 'Node', contextNode);
+
+                    const keyType = key as TreeContextMenuOperationType;
+                    if (keyType == 'delete-node') {
+                      await editorContext.deleteNodeById((contextNode.data as IrBaseNode).nodeId);
+                    } else if (keyType == 'delete-edge') {
+                      await editorContext.deleteConnectionByEdge(contextNode.data as IrPortEdge);
+                    }
+
                     setContextNode(null);
                   },
                 }}
@@ -400,7 +458,7 @@ function App() {
 
           {/* Right Panel */}
           <Splitter.Panel defaultSize="20%" min={256} max="40%" collapsible>
-            <div className="pl-4 pr-4 pb-4 pt-2 h-full flex flex-col border-l border-white/5 text-[var(--on-background-color)]">
+            <div className="pl-4 pr-4 pb-4 pt-2 h-full flex flex-col border-l border-[var(--border-color)] text-[var(--on-background-color)]">
               <Tabs
                 defaultActiveKey="1"
                 className="editor-tabs-compact"
@@ -434,6 +492,38 @@ function App() {
             </div>
           </Splitter.Panel>
         </Splitter>
+
+        {/* Footer Container */}
+        <div className="pl-8 pr-8 pt-2 pb-2 px-6 flex items-center
+          justify-between border-t border-[var(--border-color)]
+          shrink-0 shadow-lg z-10 text-[var(--secondary-color)]
+          text-sm"
+        >
+          <div className="flex items-center gap-2">
+            <Breadcrumb
+              items={[
+                {
+                  title: currentGraph.graphName,
+                },
+                {
+                  title: currentWorkflow.workflowName,
+                },
+                ...[
+                  selectedNodes.length > 0 ?
+                  {
+                    title: selectedNodes.map((node) => node.node.nodeId).join(' & '),
+                  } : undefined
+                ].filterNotNull()
+              ]}
+              separator=">"
+            />
+            <Divider orientation="vertical" className="transform translate-y-[2px]" />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Divider orientation="vertical" className="transform translate-y-[2px]" />
+          </div>
+        </div>
       </div>
     </div>
   )

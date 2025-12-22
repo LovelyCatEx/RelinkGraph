@@ -21,6 +21,13 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ConfigProvider
       theme={{
+        components: {
+          Breadcrumb: {
+            itemColor: cssVar('--on-background-color'),
+            linkColor: cssVar('--secondary-color'),
+            lastItemColor: cssVar('--primary-color'),
+          }
+        },
         token: {
           // ===== Brand / Primary =====
           colorPrimary: cssVar('--primary-color'),
@@ -50,7 +57,7 @@ createRoot(document.getElementById('root')!).render(
 
           // ===== On Primary =====
           colorTextLightSolid: cssVar('--on-primary'),
-        },
+        }
       }}
     >
       <App />
