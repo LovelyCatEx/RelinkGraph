@@ -197,7 +197,6 @@ function App() {
 
   const [treeData, setTreeData] = useState<TreeNodeData[]>([]);
   useEffect(() => {
-    console.log("rerender tree data");
     const data = [
       {
         type: 'graph',
@@ -396,8 +395,6 @@ function App() {
                   items: getTreeContextMenu(contextNode),
                   onClick: async ({ key }) => {
                     if (!contextNode || !editorContext) return;
-
-                    console.log('Operate', key, 'Node', contextNode);
 
                     const keyType = key as TreeContextMenuOperationType;
                     if (keyType == 'delete-node') {

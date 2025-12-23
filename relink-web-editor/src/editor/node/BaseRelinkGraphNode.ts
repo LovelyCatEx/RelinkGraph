@@ -8,16 +8,21 @@ import {BaseGraphNode} from "@/rete/node/BaseGraphNode.ts";
 import {execSocket, paramSocket, type RelinkGraphSocket} from "@/editor/socket";
 import type {INodePort, IrBaseNode, PortLabel} from "@/types/relink-graph.types.ts";
 import {BaseRelinkGraphNodeControl} from "@/editor/control/BaseRelinkGraphNodeControl.ts";
+import {InputRelinkGraphNodeControl} from "@/editor/control/InputRelinkGraphNodeControl.ts";
 
 export class BaseRelinkGraphNode extends BaseGraphNode<RelinkGraphSocket, BaseRelinkGraphNodeControl> {
   public readonly node: IrBaseNode;
 
-  constructor(node: IrBaseNode) {
+  constructor(
+    node: IrBaseNode,
+    private readonly onInputControlValueChanged: (v: any, portLabel: PortLabel) => void,
+    private readonly onOutputControlValueChanged: (v: any, portLabel: PortLabel) => void,
+  ) {
     super(node.nodeId);
 
     this.node = node;
 
-    this.renderSockets();
+    this.renderSocketsAndControls();
   }
 
   public findInputSocket(label: PortLabel): INodePort | undefined {
@@ -28,9 +33,11 @@ export class BaseRelinkGraphNode extends BaseGraphNode<RelinkGraphSocket, BaseRe
     return ([...this.node.execOutputs, ...this.node.outputs]).find((port: INodePort) => port.label == label);
   }
 
-  public renderSockets() {
+  public renderSocketsAndControls() {
     super.clearInputs();
+    super.clearInputSocketControls();
     super.clearOutputs();
+    super.clearOutputSocketControls();
 
 
     for (const execInput of this.node.execInputs) {
@@ -43,10 +50,30 @@ export class BaseRelinkGraphNode extends BaseGraphNode<RelinkGraphSocket, BaseRe
 
     for (const input of this.node.inputs) {
       super.addInputSocket(input.label, paramSocket, input.label);
+      super.addInputSocketControl(
+        input.label,
+        new InputRelinkGraphNodeControl(
+          this,
+          input.label,
+          (v) => {
+            this.onInputControlValueChanged(v, input.label);
+          }
+        )
+      );
     }
 
     for (const output of this.node.outputs) {
       super.addOutputSocket(output.label, paramSocket, output.label);
+      super.addOutputSocketControl(
+        output.label,
+        new InputRelinkGraphNodeControl(
+          this,
+          output.label,
+          (v) => {
+            this.onOutputControlValueChanged(v, output.label);
+          }
+        )
+      );
     }
   }
 }

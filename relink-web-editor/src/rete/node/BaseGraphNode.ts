@@ -10,7 +10,7 @@ import type {BaseGraphControl} from "@/rete/control/BaseGraphControl.ts";
 
 export abstract class BaseGraphNode<
   S extends BaseGraphSocket,
-  C extends BaseGraphControl
+  C extends BaseGraphControl<S>
 > extends ClassicPreset.Node<
   Record<string, NonNullable<S>>,
   Record<string, NonNullable<S>>,
@@ -21,6 +21,11 @@ export abstract class BaseGraphNode<
 
   protected constructor(nodeType: string) {
     super(nodeType);
+  }
+
+  public confirmSize(width: number, height: number) {
+    this.width = width;
+    this.height = height;
   }
 
   public addInputSocket(label: string, socket: S, displayName?: string) {
@@ -57,5 +62,37 @@ export abstract class BaseGraphNode<
     for (const output in this.outputs) {
       this.removeOutput(output);
     }
+  }
+
+  public addInputSocketControl(portLabel: string, control: C) {
+    this.addControl(`in::${portLabel}`, control);
+  }
+
+  public addOutputSocketControl(portLabel: string, control: C) {
+    this.addControl(`out::${portLabel}`, control);
+  }
+
+  public getInputSocketControl(portLabel: string): C | undefined {
+    return this.controls[`in::${portLabel}`];
+  }
+
+  public getOutputSocketControl(portLabel: string): C | undefined {
+    return this.controls[`out::${portLabel}`];
+  }
+
+  public clearInputSocketControls() {
+    Object.entries(this.controls).forEach(([controlKey, _]) => {
+      if (controlKey.startsWith('in::')) {
+        this.removeControl(controlKey);
+      }
+    });
+  }
+
+  public clearOutputSocketControls() {
+    Object.entries(this.controls).forEach(([controlKey, _]) => {
+      if (controlKey.startsWith('out::')) {
+        this.removeControl(controlKey);
+      }
+    });
   }
 }

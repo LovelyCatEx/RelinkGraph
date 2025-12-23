@@ -4,7 +4,7 @@
  * Use of this source code is governed by the Apache License, Version 2.0,
  * that can be found in the LICENSE file.
  */
-import type {IrBaseNode} from "@/types/relink-graph.types.ts";
+import {type IrBaseNode, irSourceNode, paramPort} from "@/types/relink-graph.types.ts";
 import type {RComparable, RNumber, RType} from "@/types/relink-ir.types.ts";
 
 export enum StdNodeType {
@@ -28,6 +28,20 @@ export interface IrConstNode extends IrBaseNode {
   constValue: {
     type: RType;
     value: any;
+  }
+}
+
+export function irConstNode(
+  valueType: RType,
+  defaultValue: any,
+  nodeName?: string,
+): IrConstNode {
+  return {
+    ...irSourceNode(StdNodeType.CONST, [], [paramPort(valueType, 'value')], nodeName),
+    constValue: {
+      type: valueType,
+      value: defaultValue
+    }
   }
 }
 

@@ -31,7 +31,7 @@ import type {BaseGraphControl} from "@/rete/control/BaseGraphControl.ts";
 
 export interface GraphEditorContext<
   S extends BaseGraphSocket,
-  CTRL extends BaseGraphControl,
+  CTRL extends BaseGraphControl<S>,
   N extends BaseGraphNode<S, CTRL>,
   C extends BaseGraphNodeConnection<S, CTRL, N, N>,
   SCHEMES extends BaseGraphSchemes<S, CTRL, N, C>
@@ -54,7 +54,7 @@ export interface GraphEditorContext<
 
 export interface CreateGraphEditorPropsEvents<
   S extends BaseGraphSocket,
-  CTRL extends BaseGraphControl,
+  CTRL extends BaseGraphControl<S>,
   N extends BaseGraphNode<S, CTRL>,
   C extends BaseGraphNodeConnection<S, CTRL, N, N>
 > {
@@ -76,7 +76,7 @@ export interface CreateGraphEditorPropsEvents<
 
 export interface CreateGraphEditorProps<
   S extends BaseGraphSocket,
-  CTRL extends BaseGraphControl,
+  CTRL extends BaseGraphControl<S>,
   N extends BaseGraphNode<S, CTRL>,
   C extends BaseGraphNodeConnection<S, CTRL, N, N>,
   SCHEMES extends BaseGraphSchemes<S, CTRL, N, C>
@@ -108,7 +108,7 @@ export interface CreateGraphEditorProps<
 
 export function useCreateReteBaseGraphEditor<
   S extends BaseGraphSocket,
-  CTRL extends BaseGraphControl,
+  CTRL extends BaseGraphControl<S>,
   N extends BaseGraphNode<S, CTRL>,
   C extends BaseGraphNodeConnection<S, CTRL, N, N>,
   SCHEMES extends BaseGraphSchemes<S, CTRL, N, C>
@@ -123,7 +123,7 @@ export function useCreateReteBaseGraphEditor<
 
 async function createBaseGraphEditor<
   S extends BaseGraphSocket,
-  CTRL extends BaseGraphControl,
+  CTRL extends BaseGraphControl<S>,
   N extends BaseGraphNode<S, CTRL>,
   C extends BaseGraphNodeConnection<S, CTRL, N, N>,
   SCHEMES extends BaseGraphSchemes<S, CTRL, N, C>
@@ -314,7 +314,7 @@ async function createBaseGraphEditor<
     editor,
     area,
     selector,
-    padding: props?.panningBoundary?.padding ?? 120,
+    padding: props?.panningBoundary?.padding ?? 20,
     intensity: (props?.panningBoundary?.enabled ?? true)
       ? (props?.panningBoundary?.intensity ?? 4)
       : 0

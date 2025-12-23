@@ -6,7 +6,7 @@
  */
 import {type ClassicScheme, Presets, type RenderEmit} from "rete-react-plugin";
 import {css} from "styled-components";
-import './base-graph-node.styles.css';
+import './base/base-graph-node.styles.css';
 import './sink-graph-node.styles.css';
 import classNames from "classnames";
 import {useRef} from "react";

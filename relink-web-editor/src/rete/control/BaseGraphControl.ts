@@ -5,5 +5,17 @@
  * that can be found in the LICENSE file.
  */
 import {ClassicPreset} from "rete";
+import {BaseGraphSocket} from "@/rete/socket/BaseGraphSocket.ts";
+import type {BaseGraphNode} from "@/rete/node/BaseGraphNode.ts";
 
-export class BaseGraphControl extends ClassicPreset.Control {}
+export class BaseGraphControl<S extends BaseGraphSocket> extends ClassicPreset.Control {
+  public readonly node: BaseGraphNode<S, any>
+  public readonly portLabel: string;
+
+  constructor(node: BaseGraphNode<S, any>, portLabel: string) {
+    super();
+
+    this.node = node;
+    this.portLabel = portLabel;
+  }
+}

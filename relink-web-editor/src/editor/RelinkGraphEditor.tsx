@@ -24,9 +24,10 @@ import {
   type IrPortEdge,
   irPureNode,
   irSinkNode,
-  irSourceNode,
   type IrWorkflow,
-  type NodeId, type NodeType, type ParamPort,
+  type NodeId,
+  type NodeType,
+  type ParamPort,
   paramPort
 } from "@/types/relink-graph.types.ts";
 import {ActionRelinkGraphNode} from "@/editor/node/ActionRelinkGraphNode.ts";
@@ -44,6 +45,8 @@ import {ContextMenuSubItem} from "@/rete/ui/menu/ContextMenuSubItem.tsx";
 import {SquareFunction} from "lucide-react";
 import {
   type IrAddNode,
+  irConstNode,
+  type IrConstNode,
   type IrDivNode,
   type IrEQNode,
   type IrGTENode,
@@ -54,7 +57,18 @@ import {
   type IrSubNode,
   StdNodeType
 } from "@/types/relink-graph-std.types.ts";
-import {getRType, RBoolean, RByte, RDouble, RFloat, RInt, RLong, RShort, RString} from "@/types/relink-ir.types.ts";
+import {
+  getRType,
+  RBoolean,
+  RByte,
+  RChar,
+  RDouble,
+  RFloat,
+  RInt,
+  RLong,
+  RShort,
+  RString
+} from "@/types/relink-ir.types.ts";
 import {Button, Divider, Tooltip} from "antd";
 import {ApartmentOutlined, FullscreenExitOutlined, LockOutlined, RedoOutlined, UndoOutlined} from "@ant-design/icons";
 import {NotificationContext} from "@/main.tsx";
@@ -62,6 +76,7 @@ import {ControlGraphNodeComponent} from "@/editor/ui/node/ControlGraphNodeCompon
 import {SinkGraphNodeComponent} from "@/editor/ui/node/SinkGraphNodeComponent.tsx";
 import {SourceGraphNodeComponent} from "@/editor/ui/node/SourceGraphNodeComponent.tsx";
 import {BaseRelinkGraphNodeControl} from "@/editor/control/BaseRelinkGraphNodeControl.ts";
+import {ConstantInputControlComponent} from "@/editor/ui/control/ConstantInputControlComponent.tsx";
 
 // @ts-ignore
 function openContextMenuAt(
@@ -254,6 +269,20 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
             return undefined;
           }
         },
+        control(_, control) {
+          if (control.node.node.nodeType == StdNodeType.CONST) {
+            return <ConstantInputControlComponent
+              onValuedChanged={(v) => {
+                (control.node.node as IrConstNode).constValue.value = v;
+              }}
+              node={control.node}
+              portLabel={control.portLabel}
+              id={control.id}
+            />
+          } else {
+            return <span>*</span>;
+          }
+        },
         contextMenu: {
           main: () => ContextMenuContainer({
             className: "p-2 rounded-[.5rem] shadow-2xl min-w-[256px] " +
@@ -370,14 +399,87 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
       [
         ['Exit', () => new SinkRelinkGraphNode(irSinkNode(StdNodeType.EXIT, [execPort()], [], integratedCtx.generateNewNodeName(StdNodeType.EXIT)))],
         ['Constant', [
-          ['Boolean', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RBoolean, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
-          ['Int', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RInt, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
-          ['String', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RString, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
-          ['Float', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RFloat, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
-          ['Double', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RDouble, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
-          ['Long', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RLong, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
-          ['Short', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RShort, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
-          ['Byte', () => new SourceRelinkGraphNode(irSourceNode(StdNodeType.CONST, [], [paramPort(RByte, 'value')], integratedCtx.generateNewNodeName(StdNodeType.CONST)))],
+          ['Boolean', () =>
+            new SourceRelinkGraphNode(
+              irConstNode(
+                RBoolean,
+                false,
+                integratedCtx.generateNewNodeName(StdNodeType.CONST)
+              )
+            )
+          ],
+          ['Int', () =>
+            new SourceRelinkGraphNode(
+              irConstNode(
+                RInt,
+                0,
+                integratedCtx.generateNewNodeName(StdNodeType.CONST)
+              )
+            )
+          ],
+          ['String', () =>
+            new SourceRelinkGraphNode(
+              irConstNode(
+                RString,
+                '',
+                integratedCtx.generateNewNodeName(StdNodeType.CONST)
+              )
+            )
+          ],
+          ['Float', () =>
+            new SourceRelinkGraphNode(
+              irConstNode(
+                RFloat,
+                0.0,
+                integratedCtx.generateNewNodeName(StdNodeType.CONST)
+              )
+            )
+          ],
+          ['Double', () =>
+            new SourceRelinkGraphNode(
+              irConstNode(
+                RDouble,
+                0.0,
+                integratedCtx.generateNewNodeName(StdNodeType.CONST)
+              )
+            )
+          ],
+          ['Long', () =>
+            new SourceRelinkGraphNode(
+              irConstNode(
+                RLong,
+                0,
+                integratedCtx.generateNewNodeName(StdNodeType.CONST)
+              )
+            )
+          ],
+          ['Short', () =>
+            new SourceRelinkGraphNode(
+              irConstNode(
+                RShort,
+                0,
+                integratedCtx.generateNewNodeName(StdNodeType.CONST)
+              )
+            )
+          ],
+          ['Char', () =>
+            new SourceRelinkGraphNode(
+              irConstNode(
+                RChar,
+                '',
+                integratedCtx.generateNewNodeName(StdNodeType.CONST)
+              )
+            )
+          ],
+          ['Byte', () =>
+            new SourceRelinkGraphNode(
+              irConstNode(
+                RByte,
+                0,
+                integratedCtx.generateNewNodeName(StdNodeType.CONST)
+              )
+            )
+          ]
         ]],
         ['Math', [
           ['Add(x, y)', () => new PureRelinkGraphNode({

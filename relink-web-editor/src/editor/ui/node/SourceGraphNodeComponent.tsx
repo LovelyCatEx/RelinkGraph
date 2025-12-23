@@ -6,30 +6,34 @@
  */
 import {type ClassicScheme, Presets, type RenderEmit} from "rete-react-plugin";
 import {css} from "styled-components";
-import './base-graph-node.styles.css';
+import './base/base-graph-node.styles.css';
 import './source-graph-node.styles.css';
-import classNames from "classnames";
-import {useRef} from "react";
 import {SquareFunction} from "lucide-react";
 import type {RelinkGraphSchemes} from "@/editor/types";
+import {getIOControls} from "@/rete/utils/control-utils.ts";
+import {BaseGraphNodeComponent} from "@/editor/ui/node/base/BaseGraphNodeComponenet.tsx";
 
-const { RefSocket } = Presets.classic;
+const { RefSocket, RefControl  } = Presets.classic;
 
 type Props<S extends ClassicScheme> = {
   data: S["Node"];
   styles?: () => ReturnType<typeof css>;
-  emit: RenderEmit<S>;
+  emit: RenderEmit<any>;
 };
 
-
 export function SourceGraphNodeComponent<S extends RelinkGraphSchemes>(props: Props<S>) {
-  const ref = useRef<HTMLDivElement>(null);
+  const inputs = Object.entries(props.data.inputs);
+  const outputs = Object.entries(props.data.outputs);
 
-  const inputs = Object.entries(props.data.inputs)
-  const outputs = Object.entries(props.data.outputs)
+  const { getCorrespondingControl} = getIOControls(props.data);
 
   return (
-    <div ref={ref} className={"base-graph-node source-graph-node " + classNames({"base-graph-node--selected": props.data.selected})}>
+    <BaseGraphNodeComponent
+      className="source-graph-node"
+      // @ts-ignore
+      data={props.data}
+      emit={props.emit}
+    >
       <div className="header flex flex-col text-white pl-4 pr-4 pt-2 pb-2">
         <div className="flex flex-row items-center space-x-2">
           <SquareFunction size="28" />
@@ -41,38 +45,56 @@ export function SourceGraphNodeComponent<S extends RelinkGraphSchemes>(props: Pr
         <div className="">
           {/* Inputs */}
           {inputs.map(([key, input]) => (
-            input && <div className="input" key={key}>
-              <RefSocket
-                name="input-socket"
-                side="input"
-                socketKey={key}
-                nodeId={props.data.id}
-                emit={props.emit}
-                payload={input.socket}
-                data-testid="input-socket"
-              />
-              {input && <span className="ml-2">{input?.label}</span>}
-            </div>
+            input && (
+                <div className="input" key={key}>
+                  <RefSocket
+                    name="input-socket"
+                    side="input"
+                    socketKey={key}
+                    nodeId={props.data.id}
+                    emit={props.emit}
+                    payload={input.socket}
+                    data-testid="input-socket"
+                  />
+              </div>
+            )
           ))}
         </div>
         <div className="">
           {/* Outputs */}
           {outputs.map(([key, output]) => (
-            output && <div className="output" key={key}>
-              {output?.label && <span className="mr-2">{output?.label}</span>}
-              <RefSocket
-                name="output-socket"
-                side="output"
-                socketKey={key}
-                nodeId={props.data.id}
-                emit={props.emit}
-                payload={output.socket}
-                data-testid="output-socket"
-              />
-            </div>
+            output && (
+              <div className="output flex flex-row space-x-2 items-center" key={key}>
+                {(() => {
+                  const control = getCorrespondingControl('out', output!.label ?? '');
+                  if (!control) {
+                    return <></>;
+                  }
+
+                  const [key, component] = control;
+                  return control && <RefControl
+                    key={key}
+                    payload={component}
+                    emit={props.emit}
+                    name={"input-control"}
+                  />
+                })()}
+
+                {output?.label && <span className="mr-2">{output?.label}</span>}
+                <RefSocket
+                  name="output-socket"
+                  side="output"
+                  socketKey={key}
+                  nodeId={props.data.id}
+                  emit={props.emit}
+                  payload={output.socket}
+                  data-testid="output-socket"
+                />
+              </div>
+            )
           ))}
         </div>
       </div>
-    </div>
+    </BaseGraphNodeComponent>
   )
 }
