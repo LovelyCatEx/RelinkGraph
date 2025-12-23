@@ -7,8 +7,9 @@
 import {BaseGraphNode} from "@/rete/node/BaseGraphNode.ts";
 import {execSocket, paramSocket, type RelinkGraphSocket} from "@/editor/socket";
 import type {INodePort, IrBaseNode, PortLabel} from "@/types/relink-graph.types.ts";
+import {BaseRelinkGraphNodeControl} from "@/editor/control/BaseRelinkGraphNodeControl.ts";
 
-export class BaseRelinkGraphNode extends BaseGraphNode<RelinkGraphSocket> {
+export class BaseRelinkGraphNode extends BaseGraphNode<RelinkGraphSocket, BaseRelinkGraphNodeControl> {
   public readonly node: IrBaseNode;
 
   constructor(node: IrBaseNode) {

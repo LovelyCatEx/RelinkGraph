@@ -27,12 +27,14 @@ import {setupPanningBoundary} from "@/rete/ui/boundary";
 import {HistoryExtensions, HistoryPlugin, Presets as HistoryPresets} from "rete-history-plugin";
 import {SquareFunction} from "lucide-react";
 import {ReadonlyPlugin} from "rete-readonly-plugin";
+import type {BaseGraphControl} from "@/rete/control/BaseGraphControl.ts";
 
 export interface GraphEditorContext<
   S extends BaseGraphSocket,
-  N extends BaseGraphNode<S>,
-  C extends BaseGraphNodeConnection<S, N, N>,
-  SCHEMES extends BaseGraphSchemes<S, N, C>
+  CTRL extends BaseGraphControl,
+  N extends BaseGraphNode<S, CTRL>,
+  C extends BaseGraphNodeConnection<S, CTRL, N, N>,
+  SCHEMES extends BaseGraphSchemes<S, CTRL, N, C>
 > {
   rete: {
     editor: NodeEditor<SCHEMES>;
@@ -46,14 +48,15 @@ export interface GraphEditorContext<
   getSelectedNodes: () => N[];
   enableReadonly: () => void;
   disableReadonly: () => void;
-  registerContextMenu: (items: EditorContextMenuItem<S>[]) => void;
+  registerContextMenu: (items: EditorContextMenuItem<S, CTRL>[]) => void;
   destroy(): void;
 }
 
 export interface CreateGraphEditorPropsEvents<
   S extends BaseGraphSocket,
-  N extends BaseGraphNode<S>,
-  C extends BaseGraphNodeConnection<S, N, N>
+  CTRL extends BaseGraphControl,
+  N extends BaseGraphNode<S, CTRL>,
+  C extends BaseGraphNodeConnection<S, CTRL, N, N>
 > {
   onInvalidConnection?: (
     reason: 'readonly'
@@ -73,9 +76,10 @@ export interface CreateGraphEditorPropsEvents<
 
 export interface CreateGraphEditorProps<
   S extends BaseGraphSocket,
-  N extends BaseGraphNode<S>,
-  C extends BaseGraphNodeConnection<S, N, N>,
-  SCHEMES extends BaseGraphSchemes<S, N, C>
+  CTRL extends BaseGraphControl,
+  N extends BaseGraphNode<S, CTRL>,
+  C extends BaseGraphNodeConnection<S, CTRL, N, N>,
+  SCHEMES extends BaseGraphSchemes<S, CTRL, N, C>
 > {
   connectionFactory: (fromNode: N, fromSocket: string, toNode: N, toSocket: string) => SCHEMES["Connection"],
   canMakeConnection?: (fromNode: N, fromSocket: S, fromLabel: string, toNode: N, toSocket: S, toLabel: string) => boolean,
@@ -83,6 +87,7 @@ export interface CreateGraphEditorProps<
     node?: (editor: NodeEditor<SCHEMES>, node: SCHEMES["Node"], emit: RenderEmit<SCHEMES>) => ReactElement | undefined | null;
     connection?: (editor: NodeEditor<SCHEMES>, connection: SCHEMES["Connection"]) => ReactElement | undefined | null;
     socket?: (editor: NodeEditor<SCHEMES>, socket: S) => ReactElement | undefined | null;
+    control?: (editor: NodeEditor<SCHEMES>, control: CTRL) => ReactElement | undefined | null;
     contextMenu?: {
       main?: () => ComponentType;
       item?: (item: Item) => ComponentType;
@@ -90,9 +95,8 @@ export interface CreateGraphEditorProps<
       common?: () => ComponentType;
     }
   },
-  events?: CreateGraphEditorPropsEvents<S, N, C>,
+  events?: CreateGraphEditorPropsEvents<S, CTRL, N, C>,
   contextMenu?: {
-    items: EditorContextMenuItem<S>[],
     renderDelay?: number
   },
   panningBoundary?: {
@@ -104,10 +108,11 @@ export interface CreateGraphEditorProps<
 
 export function useCreateReteBaseGraphEditor<
   S extends BaseGraphSocket,
-  N extends BaseGraphNode<S>,
-  C extends BaseGraphNodeConnection<S, N, N>,
-  SCHEMES extends BaseGraphSchemes<S, N, C>
->(props: CreateGraphEditorProps<S, N, C, SCHEMES>) {
+  CTRL extends BaseGraphControl,
+  N extends BaseGraphNode<S, CTRL>,
+  C extends BaseGraphNodeConnection<S, CTRL, N, N>,
+  SCHEMES extends BaseGraphSchemes<S, CTRL, N, C>
+>(props: CreateGraphEditorProps<S, CTRL, N, C, SCHEMES>) {
   return useCallback(
     (container: HTMLElement) => {
       return createBaseGraphEditor(container, props);
@@ -118,13 +123,14 @@ export function useCreateReteBaseGraphEditor<
 
 async function createBaseGraphEditor<
   S extends BaseGraphSocket,
-  N extends BaseGraphNode<S>,
-  C extends BaseGraphNodeConnection<S, N, N>,
-  SCHEMES extends BaseGraphSchemes<S, N, C>
+  CTRL extends BaseGraphControl,
+  N extends BaseGraphNode<S, CTRL>,
+  C extends BaseGraphNodeConnection<S, CTRL, N, N>,
+  SCHEMES extends BaseGraphSchemes<S, CTRL, N, C>
 >(
   container: HTMLElement,
-  props: CreateGraphEditorProps<S, N, C, SCHEMES>
-): Promise<GraphEditorContext<S, N, C, SCHEMES>> {
+  props: CreateGraphEditorProps<S, CTRL, N, C, SCHEMES>
+): Promise<GraphEditorContext<S, CTRL, N, C, SCHEMES>> {
   type AreaExtra = ReactArea2D<SCHEMES> | ContextMenuExtra;
 
   const editor = new NodeEditor<SCHEMES>();
@@ -147,7 +153,7 @@ async function createBaseGraphEditor<
         node(data) {
           return ({ emit }) => {
             return props.render?.node?.(editor, data.payload, emit) ?? <Presets.classic.Node data={data.payload} emit={emit} />
-          }
+          };
         },
         connection(data) {
           // const { source, target } = getConnectionSockets(editor, data.payload);
@@ -158,7 +164,12 @@ async function createBaseGraphEditor<
         socket(data) {
           return () => {
             return props.render?.socket?.(editor, data.payload as S) ?? <Presets.classic.Socket data={data.payload} />
-          }
+          };
+        },
+        control(data) {
+          return () => {
+            return props.render?.control?.(editor, data.payload as CTRL) ?? <div>UNKNOWN RENDER</div>;
+          };
         }
       },
     })
@@ -217,7 +228,7 @@ async function createBaseGraphEditor<
         const sourceNode = editor.getNode(source.nodeId)!;
         const targetNode = editor.getNode(target.nodeId)!;
 
-        const sockets = getConnectionSockets<S, N, C, SCHEMES>(
+        const sockets = getConnectionSockets<S, CTRL, N, C, SCHEMES>(
           editor,
           props.connectionFactory(
             sourceNode,
@@ -323,7 +334,7 @@ async function createBaseGraphEditor<
 
   AreaExtensions.simpleNodesOrder(area);
 
-  const ctx: GraphEditorContext<S, N, C, SCHEMES> = {
+  const ctx: GraphEditorContext<S, CTRL, N, C, SCHEMES> = {
     rete: {
       editor: editor,
       area: area,
@@ -355,15 +366,15 @@ async function createBaseGraphEditor<
     },
     registerContextMenu: (menus) => {
       // Configure context menu
-      const resolveContextMenu = (item: EditorContextMenuItem<S>): ItemDefinition<SCHEMES> => {
+      const resolveContextMenu = (item: EditorContextMenuItem<S, CTRL>): ItemDefinition<SCHEMES> => {
         const [key, factoryOrItems] = item;
         if (typeof factoryOrItems == 'function') {
           return [key, async () => {
-            const fx = (factoryOrItems as GraphNodeFactory<S>)
+            const fx = (factoryOrItems as GraphNodeFactory<S, CTRL>)
             return fx() as SCHEMES["Node"];
           }]
         } else {
-          return [key, (factoryOrItems as EditorContextMenuItem<S>[]).map((it) => resolveContextMenu(it))]
+          return [key, (factoryOrItems as EditorContextMenuItem<S, CTRL>[]).map((it) => resolveContextMenu(it))]
         }
       }
 

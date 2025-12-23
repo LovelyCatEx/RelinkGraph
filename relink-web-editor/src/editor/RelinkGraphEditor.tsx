@@ -61,6 +61,7 @@ import {NotificationContext} from "@/main.tsx";
 import {ControlGraphNodeComponent} from "@/editor/ui/node/ControlGraphNodeComponent.tsx";
 import {SinkGraphNodeComponent} from "@/editor/ui/node/SinkGraphNodeComponent.tsx";
 import {SourceGraphNodeComponent} from "@/editor/ui/node/SourceGraphNodeComponent.tsx";
+import {BaseRelinkGraphNodeControl} from "@/editor/control/BaseRelinkGraphNodeControl.ts";
 
 // @ts-ignore
 function openContextMenuAt(
@@ -94,7 +95,7 @@ function worldToScreen(
 
 export interface RelinkGraphEditorProps extends
   React.HTMLAttributes<HTMLDivElement>,
-  CreateGraphEditorPropsEvents<RelinkGraphSocket, BaseRelinkGraphNode, RelinkGraphConnection>
+  CreateGraphEditorPropsEvents<RelinkGraphSocket, BaseRelinkGraphNodeControl, BaseRelinkGraphNode, RelinkGraphConnection>
 {
   initialWorkflow?: IrWorkflow;
   onEditorInitialized?: (ctx: RelinkGraphEditorContext) => void;
@@ -177,6 +178,7 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
   const [ref, baseCtx] = useRete(
     useCreateReteBaseGraphEditor<
       RelinkGraphSocket,
+    BaseRelinkGraphNodeControl,
       BaseRelinkGraphNode,
       RelinkGraphConnection,
       RelinkGraphSchemes
@@ -282,9 +284,8 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
       },
       contextMenu: {
         renderDelay: 100,
-        items: []
       },
-      events: props
+      events: props,
     })
   );
 

@@ -7,9 +7,11 @@
 import {ClassicPreset} from "rete";
 import type {BaseGraphNode} from "../node/BaseGraphNode.ts";
 import type {BaseGraphSocket} from "../socket/BaseGraphSocket.ts";
+import type {BaseGraphControl} from "@/rete/control/BaseGraphControl.ts";
 
 export class BaseGraphNodeConnection<
   S extends BaseGraphSocket,
-  A extends BaseGraphNode<S>,
-  B extends BaseGraphNode<S>
+  CTRL extends BaseGraphControl,
+  A extends BaseGraphNode<S, CTRL>,
+  B extends BaseGraphNode<S, CTRL>
 > extends ClassicPreset.Connection<A, B> {}

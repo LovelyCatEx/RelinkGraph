@@ -6,11 +6,15 @@
  */
 import {ClassicPreset} from "rete";
 import {BaseGraphSocket} from "../socket/BaseGraphSocket.ts";
+import type {BaseGraphControl} from "@/rete/control/BaseGraphControl.ts";
 
-export abstract class BaseGraphNode<S extends BaseGraphSocket> extends ClassicPreset.Node<
+export abstract class BaseGraphNode<
+  S extends BaseGraphSocket,
+  C extends BaseGraphControl
+> extends ClassicPreset.Node<
   Record<string, NonNullable<S>>,
   Record<string, NonNullable<S>>,
-  object
+  Record<string, NonNullable<C>>
 > {
   public width: number = 300;
   public height: number = 180;

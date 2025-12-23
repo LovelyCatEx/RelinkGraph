@@ -5,21 +5,25 @@ import {BaseGraphNodeConnection} from "@/rete/types/connection.ts";
 import type {GraphEditorContext} from "@/rete/rete-editor.tsx";
 import type {IrPortEdge, NodeId, NodeType} from "@/types/relink-graph.types.ts";
 import type {SourceRelinkGraphNode} from "@/editor/node/SourceRelinkGraphNode.ts";
+import {BaseRelinkGraphNodeControl} from "@/editor/control/BaseRelinkGraphNodeControl.ts";
 
 export class RelinkGraphConnection extends BaseGraphNodeConnection<
   RelinkGraphSocket,
+  BaseRelinkGraphNodeControl,
   BaseRelinkGraphNode,
   BaseRelinkGraphNode
 > {}
 
 export type RelinkGraphSchemes = BaseGraphSchemes<
   RelinkGraphSocket,
+  BaseRelinkGraphNodeControl,
   BaseRelinkGraphNode,
   RelinkGraphConnection
 >;
 
 export interface RelinkGraphEditorContext extends GraphEditorContext<
   RelinkGraphSocket,
+  BaseRelinkGraphNodeControl,
   BaseRelinkGraphNode,
   RelinkGraphConnection,
   RelinkGraphSchemes

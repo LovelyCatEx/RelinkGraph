@@ -9,6 +9,7 @@ import type {BaseGraphSchemes} from "../types/schemes.ts";
 import type {BaseGraphSocket} from "../socket/BaseGraphSocket.ts";
 import {BaseGraphNode} from "../node/BaseGraphNode.ts";
 import {BaseGraphNodeConnection} from "../types/connection.ts";
+import type {BaseGraphControl} from "@/rete/control/BaseGraphControl.ts";
 
 type Input<S extends BaseGraphSocket> = ClassicPreset.Input<S>;
 type Output<S extends BaseGraphSocket> = ClassicPreset.Output<S>;
@@ -21,9 +22,10 @@ type Output<S extends BaseGraphSocket> = ClassicPreset.Output<S>;
  */
 export function getConnectionSockets<
   S extends BaseGraphSocket,
-  N extends BaseGraphNode<S>,
-  C extends BaseGraphNodeConnection<S, N, N>,
-  SCHEMES extends BaseGraphSchemes<S, N, C>
+  CTRL extends BaseGraphControl,
+  N extends BaseGraphNode<S, CTRL>,
+  C extends BaseGraphNodeConnection<S, CTRL, N, N>,
+  SCHEMES extends BaseGraphSchemes<S, CTRL, N, C>
 >(
   editor: NodeEditor<SCHEMES>,
   connection: SCHEMES["Connection"]

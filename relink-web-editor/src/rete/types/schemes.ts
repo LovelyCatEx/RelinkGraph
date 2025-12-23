@@ -9,9 +9,11 @@ import {type GetSchemes} from "rete";
 import {BaseGraphNodeConnection} from "./connection.ts";
 import type {BaseGraphSocket} from "../socket/BaseGraphSocket.ts";
 import type {ClassicScheme} from "rete-react-plugin";
+import type {BaseGraphControl} from "@/rete/control/BaseGraphControl.ts";
 
 export type BaseGraphSchemes<
   S extends BaseGraphSocket,
-  N extends BaseGraphNode<S>,
-  C extends BaseGraphNodeConnection<S, N, N>
+  CTRL extends BaseGraphControl,
+  N extends BaseGraphNode<S, CTRL>,
+  C extends BaseGraphNodeConnection<S, CTRL, N, N>
 > = GetSchemes<N, C> & ClassicScheme
