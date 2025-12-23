@@ -63,12 +63,12 @@ export interface IrPortEdge {
 
 export interface IrWorkflow {
   workflowName: string;
-  nodes: IrBaseNode[] & {
+  nodes: (IrBaseNode & {
     position?: {
       x: number,
       y: number
     }
-  };
+  })[];
   portEdges: IrPortEdge[]
 }
 

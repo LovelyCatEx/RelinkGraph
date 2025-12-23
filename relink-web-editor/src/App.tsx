@@ -39,7 +39,7 @@ import {
   EditOutlined,
   ExportOutlined,
   ForkOutlined,
-  FunctionOutlined,
+  FunctionOutlined, ImportOutlined,
   LockOutlined,
   LogoutOutlined,
   MenuOutlined,
@@ -55,6 +55,8 @@ import type {BaseRelinkGraphNode} from "@/editor/node/BaseRelinkGraphNode.ts";
 import type {RelinkGraphConnection, RelinkGraphEditorContext} from "@/editor/types";
 import {NotificationContext} from "@/main.tsx";
 import {ClockComponent} from "@/components/ClockComponent.tsx";
+import {exportWorkflow} from "@/editor/utils/export-utils.ts";
+import {exportJsonFile} from "@/utils/file.ts";
 
 type TreeContextMenuOperationType =
   'new-graph'
@@ -168,7 +170,7 @@ function App() {
   const [connections, setConnections] = useState<RelinkGraphConnection[]>([]);
   const [selectedNodes, setSelectedNodes] = useState<BaseRelinkGraphNode[]>([]);
 
-  const currentGraph = IR_GRAPH_SERIALIZATION_MOCK
+  let currentGraph = IR_GRAPH_SERIALIZATION_MOCK
   const currentWorkflow = IR_GRAPH_SERIALIZATION_MOCK.workflows[0]
 
   const generateGraphTreeItemKey = (graphName: string) => {
@@ -349,6 +351,25 @@ function App() {
     }
   };
 
+  const onExportCurrentWorkflowEvent = () => {
+    const exported = exportWorkflow(currentWorkflow.workflowName, editorContext!);
+    exportJsonFile(JSON.stringify(exported, undefined, 2), `${currentGraph.graphName}_${currentWorkflow.workflowName}.json`);
+  }
+
+  const onExportCurrentGraphEvent = () => {
+    const currentWorkflowData = exportWorkflow(currentWorkflow.workflowName, editorContext!);
+    const current = currentGraph.workflows.find((workflow) => workflow.workflowName == currentWorkflow.workflowName);
+
+    if (current) {
+      current.workflowName = currentWorkflowData.workflowName
+      current.nodes = currentWorkflowData.nodes
+      current.portEdges = currentWorkflowData.portEdges
+    }
+
+    const exported = JSON.stringify(currentGraph, undefined, 2);
+    exportJsonFile(exported, `${currentGraph.graphName}.json`);
+  }
+
   return (
     <div className="h-screen w-full font-sans overflow-hidden select-none bg-[var(--background-color)] text-[var(--on-background-color)]">
       <div className="h-full bg-transparent flex flex-col">
@@ -364,17 +385,44 @@ function App() {
           </div>
 
           <div className="flex items-center p-0.5 rounded-xl border border-white/10 space-x-2 pl-2 pr-2">
-            <Button type="text" icon={<SaveOutlined />} />
-            <Button type="text" icon={<ExportOutlined />} />
+            <Tooltip title="Save workflow" placement="bottom">
+              <Button
+                type="text"
+                icon={<SaveOutlined />}
+              />
+            </Tooltip>
+
+            <Tooltip title="Import workflow" placement="bottom">
+              <Button
+                type="text"
+                icon={<ImportOutlined />}
+              />
+            </Tooltip>
+
+            <Tooltip title="Export current workflow" placement="bottom">
+              <Button
+                type="text"
+                icon={<ExportOutlined />}
+                onClick={onExportCurrentWorkflowEvent}
+              />
+            </Tooltip>
           </div>
 
           <div className="flex items-center gap-2">
-            <Button>
-              Import
-            </Button>
-            <Button type="primary">
-              Export
-            </Button>
+            <Tooltip title="Import graph" placement="bottom">
+              <Button>
+                Import
+              </Button>
+            </Tooltip>
+
+            <Tooltip title="Export current graph" placement="bottom">
+              <Button
+                type="primary"
+                onClick={onExportCurrentGraphEvent}
+              >
+                Export
+              </Button>
+            </Tooltip>
           </div>
         </div>
 

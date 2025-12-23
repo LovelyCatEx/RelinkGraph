@@ -67,7 +67,7 @@ import {
   RInt,
   RLong,
   RShort,
-  RString
+  RString, rTypeInstanceOf
 } from "@/types/relink-ir.types.ts";
 import {Button, Divider, Tooltip} from "antd";
 import {ApartmentOutlined, FullscreenExitOutlined, LockOutlined, RedoOutlined, UndoOutlined} from "@ant-design/icons";
@@ -274,7 +274,13 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
           if (control.node.node.nodeType == StdNodeType.CONST) {
             return <ConstantInputControlComponent
               onValuedChanged={(v) => {
-                (control.node.node as IrConstNode).constValue.value = stringToRealType(v);
+                const type = getRType((control.node.node as IrConstNode).constValue.type);
+                let realValue = v;
+                if (rTypeInstanceOf(type, RString)) {
+                  (control.node.node as IrConstNode).constValue.value = realValue;
+                } else {
+                  (control.node.node as IrConstNode).constValue.value = stringToRealType(realValue);
+                }
               }}
               node={control.node}
               portLabel={control.portLabel}

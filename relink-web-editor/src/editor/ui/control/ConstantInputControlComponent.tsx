@@ -9,8 +9,8 @@ import type {IrConstNode} from "@/types/relink-graph-std.types.ts";
 import {useState} from "react";
 import {
   getRType,
-  isRType,
-  RBoolean, RByte,
+  RBoolean,
+  RByte,
   RChar,
   RNumber,
   RString,
@@ -23,12 +23,7 @@ import TextArea from "antd/lib/input/TextArea";
 export function ConstantInputControlComponent(data: InputRelinkGraphNodeControl) {
   const constNode = data.node.node as IrConstNode;
 
-  let type: RType;
-  if (isRType(constNode.constValue.type)) {
-    type = constNode.constValue.type;
-  } else {
-    type = getRType(constNode.constValue.type as unknown as string);
-  }
+  let type: RType = getRType(constNode.constValue.type as unknown as string);
 
   const [value, setValue] = useState<string>(constNode.constValue.value.toString());
 

@@ -60,7 +60,11 @@ export function isRType(target: any) {
   return RTypeKeys.all((it) => keys.includes(it));
 }
 
-export function getRType(qualifiedName: string): RType {
+export function getRType(qualifiedName: any): RType {
+  if (isRType(qualifiedName)) {
+    return qualifiedName;
+  }
+
   if (!RELINK_TYPES_MAP.has(qualifiedName)) {
     throw new Error(`RType ${qualifiedName} is not defined.`);
   }
