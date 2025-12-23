@@ -77,6 +77,7 @@ import {SinkGraphNodeComponent} from "@/editor/ui/node/SinkGraphNodeComponent.ts
 import {SourceGraphNodeComponent} from "@/editor/ui/node/SourceGraphNodeComponent.tsx";
 import {BaseRelinkGraphNodeControl} from "@/editor/control/BaseRelinkGraphNodeControl.ts";
 import {ConstantInputControlComponent} from "@/editor/ui/control/ConstantInputControlComponent.tsx";
+import {stringToRealType} from "@/utils/types.ts";
 
 // @ts-ignore
 function openContextMenuAt(
@@ -140,7 +141,7 @@ async function renderWorkflow(ctx: RelinkGraphEditorContext, ir: IrWorkflow) {
       }
       case "SOURCE": {
         await ctx.rete.editor.addNode(
-          new SourceRelinkGraphNode(node)
+          new SourceRelinkGraphNode(node, undefined)
         )
         break;
       }
@@ -273,7 +274,7 @@ export function RelinkGraphEditor(props: RelinkGraphEditorProps) {
           if (control.node.node.nodeType == StdNodeType.CONST) {
             return <ConstantInputControlComponent
               onValuedChanged={(v) => {
-                (control.node.node as IrConstNode).constValue.value = v;
+                (control.node.node as IrConstNode).constValue.value = stringToRealType(v);
               }}
               node={control.node}
               portLabel={control.portLabel}

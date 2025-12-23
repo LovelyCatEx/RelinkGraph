@@ -15,8 +15,8 @@ export class BaseRelinkGraphNode extends BaseGraphNode<RelinkGraphSocket, BaseRe
 
   constructor(
     node: IrBaseNode,
-    private readonly onInputControlValueChanged: (v: any, portLabel: PortLabel) => void,
-    private readonly onOutputControlValueChanged: (v: any, portLabel: PortLabel) => void,
+    private readonly onInputControlValueChanged?: (v: any, portLabel: PortLabel, node: BaseRelinkGraphNode) => void,
+    private readonly onOutputControlValueChanged?: (v: any, portLabel: PortLabel, node: BaseRelinkGraphNode) => void,
   ) {
     super(node.nodeId);
 
@@ -56,7 +56,7 @@ export class BaseRelinkGraphNode extends BaseGraphNode<RelinkGraphSocket, BaseRe
           this,
           input.label,
           (v) => {
-            this.onInputControlValueChanged(v, input.label);
+            this.onInputControlValueChanged?.(v, input.label, this);
           }
         )
       );
@@ -70,7 +70,8 @@ export class BaseRelinkGraphNode extends BaseGraphNode<RelinkGraphSocket, BaseRe
           this,
           output.label,
           (v) => {
-            this.onOutputControlValueChanged(v, output.label);
+            console.log(v, "1151555115")
+            this.onOutputControlValueChanged?.(v, output.label, this);
           }
         )
       );
