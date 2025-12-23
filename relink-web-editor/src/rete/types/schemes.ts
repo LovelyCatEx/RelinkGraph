@@ -13,7 +13,7 @@ import type {BaseGraphControl} from "@/rete/control/BaseGraphControl.ts";
 
 export type BaseGraphSchemes<
   S extends BaseGraphSocket,
-  CTRL extends BaseGraphControl,
+  CTRL extends BaseGraphControl<S>,
   N extends BaseGraphNode<S, CTRL>,
   C extends BaseGraphNodeConnection<S, CTRL, N, N>
 > = GetSchemes<N, C> & ClassicScheme

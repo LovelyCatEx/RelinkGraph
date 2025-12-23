@@ -10,12 +10,12 @@ import type {BaseGraphControl} from "@/rete/control/BaseGraphControl.ts";
 
 export type GraphNodeFactory<
   S extends BaseGraphSocket,
-  CTRL extends BaseGraphControl
+  CTRL extends BaseGraphControl<S>
 > = () => (BaseGraphNode<S, CTRL> | Promise<BaseGraphNode<S, CTRL>>)
 
 export type EditorContextMenuItem<
   S extends BaseGraphSocket,
-  CTRL extends BaseGraphControl
+  CTRL extends BaseGraphControl<S>
 > = [
   string, GraphNodeFactory<S, CTRL> | EditorContextMenuItem<S, CTRL>[]
 ];

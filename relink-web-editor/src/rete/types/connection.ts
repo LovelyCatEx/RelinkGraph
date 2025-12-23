@@ -11,7 +11,7 @@ import type {BaseGraphControl} from "@/rete/control/BaseGraphControl.ts";
 
 export class BaseGraphNodeConnection<
   S extends BaseGraphSocket,
-  CTRL extends BaseGraphControl,
+  CTRL extends BaseGraphControl<S>,
   A extends BaseGraphNode<S, CTRL>,
   B extends BaseGraphNode<S, CTRL>
 > extends ClassicPreset.Connection<A, B> {}
