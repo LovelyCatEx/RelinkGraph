@@ -23,7 +23,16 @@ enum class StdNodeType : INodeType {
     EQ,
     GTE,
     LTE,
-    IF;
+    IF,
+    TO_STRING,
+    TO_BYTE,
+    TO_CHAR,
+    TO_SHORT,
+    TO_INT,
+    TO_LONG,
+    TO_FLOAT,
+    TO_DOUBLE,
+    TO_BOOLEAN;
 
     override fun getTypeName(): String {
         return this.name

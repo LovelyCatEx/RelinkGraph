@@ -26,6 +26,7 @@ import com.lovelycatv.relink.std.runtime.executor.pure.math.AddExecutor
 import com.lovelycatv.relink.std.runtime.executor.pure.math.DivExecutor
 import com.lovelycatv.relink.std.runtime.executor.pure.math.MulExecutor
 import com.lovelycatv.relink.std.runtime.executor.pure.math.SubExecutor
+import com.lovelycatv.relink.std.runtime.executor.pure.transformer.ToStringExecutor
 import com.lovelycatv.relink.std.runtime.utils.parseObject
 
 open class RelinkGraphStd(
@@ -52,6 +53,7 @@ open class RelinkGraphStd(
         registerExecutor(StdNodeType.EQ, EQExecutor)
         registerExecutor(StdNodeType.GTE, GTEExecutor)
         registerExecutor(StdNodeType.LTE, LTEExecutor)
+        registerExecutor(StdNodeType.TO_STRING, ToStringExecutor)
     }
 
     fun <N : IrBaseNode> registerExecutor(type: INodeType, executor: NodeExecutor<N>) {
