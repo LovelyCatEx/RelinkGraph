@@ -7,9 +7,10 @@
  */
 package com.lovelycatv.relink.std.runtime.executor.comparator
 
-import com.lovelycatv.relink.std.ir.pure.IrLTENode
+import com.lovelycatv.relink.std.ir.pure.comparator.IrLTENode
 import com.lovelycatv.relink.ir.type.RInt
 import com.lovelycatv.relink.std.runtime.booleanValue
+import com.lovelycatv.relink.std.runtime.executor.pure.comparator.LTEExecutor
 import com.lovelycatv.relink.std.runtime.type.IntValue
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals

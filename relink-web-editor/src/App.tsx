@@ -370,6 +370,9 @@ function App() {
     exportJsonFile(exported, `${currentGraph.graphName}.json`);
   }
 
+  type RightSideTabItems = 'inspector' | 'settings';
+  const [rightSideTabKey, setRightSideTabKey] = useState<RightSideTabItems>('inspector')
+
   return (
     <div className="h-screen w-full font-sans overflow-hidden select-none bg-[var(--background-color)] text-[var(--on-background-color)]">
       <div className="h-full bg-transparent flex flex-col">
@@ -533,34 +536,70 @@ function App() {
           <Splitter.Panel defaultSize="20%" min={256} max="40%" collapsible>
             <div className="pl-4 pr-4 pb-4 pt-2 h-full flex flex-col border-l border-[var(--border-color)] text-[var(--on-background-color)]">
               <Tabs
-                defaultActiveKey="1"
+                defaultActiveKey="inspector"
                 className="editor-tabs-compact"
                 items={[
-                  { key: '1', label: 'Inspector' },
-                  { key: '2', label: 'Settings' },
+                  { key: 'inspector', label: 'Inspector' },
+                  { key: 'settings', label: 'Settings' },
                 ]}
+                onChange={(key: string) => {
+                  setRightSideTabKey(key as RightSideTabItems);
+                }}
               />
 
-              <div className="flex-1 overflow-auto mt-4 space-y-4 pr-1 custom-scrollbar">
-                <section>
-                  <div className="font-bold uppercase mb-3 flex items-center gap-2">
-                    <div className="w-1 h-3 rounded-full bg-[var(--primary-color)]"></div>
-                    <span>Transform</span>
-                  </div>
+              <div className="flex-1 overflow-auto mt-4 pr-1 custom-scrollbar relative">
+                <div
+                  className={`transition-all duration-200 ease-in-out ${
+                    rightSideTabKey === 'inspector'
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 translate-y-2 pointer-events-none absolute inset-0'
+                  }`}
+                >
+                  <section>
+                    <div className="font-bold uppercase mb-3 flex items-center gap-2">
+                      <div className="w-1 h-3 rounded-full bg-[var(--primary-color)]"></div>
+                      <span>Transform</span>
+                    </div>
 
-                  <div className="space-y-3">
-                    {[['Position', '0.0'], ['Rotate', '0.0'], ['Scale', '1.0']].map(([label, val]) => (
-                      <div key={label} className="flex items-center gap-2">
-                        <span className="w-12">{label}</span>
-                        <div className="flex-1 grid grid-cols-3 gap-1">
-                          <Input size="small" defaultValue={val} className="border-none text-gray-300 rounded-md text-center h-7 text-[11px]" />
-                          <Input size="small" defaultValue={val} className="border-none text-gray-300 rounded-md text-center h-7 text-[11px]" />
-                          <Input size="small" defaultValue={val} className="border-none text-gray-300 rounded-md text-center h-7 text-[11px]" />
+                    <div className="space-y-3">
+                      {[['Position', '0.0'], ['Rotate', '0.0'], ['Scale', '1.0']].map(([label, val]) => (
+                        <div key={label} className="flex items-center gap-2">
+                          <span className="w-12">{label}</span>
+                          <div className="flex-1 grid grid-cols-3 gap-1">
+                            <Input size="small" defaultValue={val} className="border-none text-gray-300 rounded-md text-center h-7 text-[11px]" />
+                            <Input size="small" defaultValue={val} className="border-none text-gray-300 rounded-md text-center h-7 text-[11px]" />
+                            <Input size="small" defaultValue={val} className="border-none text-gray-300 rounded-md text-center h-7 text-[11px]" />
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
+                      ))}
+                    </div>
+                  </section>
+                </div>
+
+                <div
+                  className={`transition-all duration-200 ease-in-out ${
+                    rightSideTabKey === 'settings'
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 translate-y-2 pointer-events-none absolute inset-0'
+                  }`}
+                >
+                  <section>
+                    <div className="font-bold uppercase mb-3 flex items-center gap-2">
+                      <div className="w-1 h-3 rounded-full bg-[var(--primary-color)]" />
+                      <span>Settings</span>
+                    </div>
+                  </section>
+                </div>
+
+                <div
+                  className={`transition-all duration-200 ease-in-out ${
+                    rightSideTabKey !== 'inspector' && rightSideTabKey !== 'settings'
+                      ? 'opacity-100 translate-y-0'
+                      : 'opacity-0 translate-y-2 pointer-events-none absolute inset-0'
+                  }`}
+                >
+                  <section>There are nothing here :(</section>
+                </div>
               </div>
             </div>
           </Splitter.Panel>

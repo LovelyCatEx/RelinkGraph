@@ -11,16 +11,21 @@ import com.lovelycatv.relink.ir.IrRelinkGraph
 import com.lovelycatv.relink.std.ir.StdNodeType
 import com.lovelycatv.relink.ir.workflow.node.INodeType
 import com.lovelycatv.relink.ir.workflow.node.IrBaseNode
-import com.lovelycatv.relink.std.runtime.executor.ConstExecutor
-import com.lovelycatv.relink.std.runtime.executor.EntryExecutor
-import com.lovelycatv.relink.std.runtime.executor.ExitExecutor
+import com.lovelycatv.relink.std.runtime.executor.source.ConstExecutor
+import com.lovelycatv.relink.std.runtime.executor.source.EntryExecutor
+import com.lovelycatv.relink.std.runtime.executor.sink.ExitExecutor
 import com.lovelycatv.relink.std.runtime.executor.NodeExecutor
-import com.lovelycatv.relink.std.runtime.executor.comparator.*
 import com.lovelycatv.relink.std.runtime.executor.control.IfExecutor
-import com.lovelycatv.relink.std.runtime.executor.math.AddExecutor
-import com.lovelycatv.relink.std.runtime.executor.math.DivExecutor
-import com.lovelycatv.relink.std.runtime.executor.math.MulExecutor
-import com.lovelycatv.relink.std.runtime.executor.math.SubExecutor
+import com.lovelycatv.relink.std.runtime.executor.pure.comparator.ComparatorExecutor
+import com.lovelycatv.relink.std.runtime.executor.pure.comparator.EQExecutor
+import com.lovelycatv.relink.std.runtime.executor.pure.comparator.GTEExecutor
+import com.lovelycatv.relink.std.runtime.executor.pure.comparator.GTExecutor
+import com.lovelycatv.relink.std.runtime.executor.pure.comparator.LTEExecutor
+import com.lovelycatv.relink.std.runtime.executor.pure.comparator.LTExecutor
+import com.lovelycatv.relink.std.runtime.executor.pure.math.AddExecutor
+import com.lovelycatv.relink.std.runtime.executor.pure.math.DivExecutor
+import com.lovelycatv.relink.std.runtime.executor.pure.math.MulExecutor
+import com.lovelycatv.relink.std.runtime.executor.pure.math.SubExecutor
 import com.lovelycatv.relink.std.runtime.utils.parseObject
 
 open class RelinkGraphStd(

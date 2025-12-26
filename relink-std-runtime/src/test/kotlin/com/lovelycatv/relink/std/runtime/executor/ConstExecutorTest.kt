@@ -9,6 +9,7 @@ package com.lovelycatv.relink.std.runtime.executor
 
 import com.lovelycatv.relink.std.ir.source.IrConstantNode
 import com.lovelycatv.relink.ir.type.ConstInt
+import com.lovelycatv.relink.std.runtime.executor.source.ConstExecutor
 import com.lovelycatv.relink.std.runtime.intValue
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals

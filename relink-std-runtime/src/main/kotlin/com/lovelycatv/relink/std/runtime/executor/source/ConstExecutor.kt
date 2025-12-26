@@ -5,28 +5,21 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.std.runtime.executor.comparator
+package com.lovelycatv.relink.std.runtime.executor.source
 
 import com.lovelycatv.relink.ir.PortLabel
-import com.lovelycatv.relink.std.ir.pure.IrLTENode
+import com.lovelycatv.relink.std.ir.source.IrConstantNode
 import com.lovelycatv.relink.std.runtime.asRuntimeValue
 import com.lovelycatv.relink.std.runtime.executor.NodeExecutor
-import com.lovelycatv.relink.std.runtime.intValue
-import com.lovelycatv.relink.std.runtime.type.ComparableValue
 import com.lovelycatv.relink.std.runtime.type.RuntimeValue
 
-object LTEExecutor : NodeExecutor<IrLTENode> {
+object ConstExecutor : NodeExecutor<IrConstantNode> {
     override suspend fun execute(
-        node: IrLTENode,
+        node: IrConstantNode,
         inputs: Map<PortLabel, RuntimeValue>
     ): Map<PortLabel, RuntimeValue> {
-        val x = inputs[IrLTENode.INPUT_X]!! as ComparableValue
-        val y = inputs[IrLTENode.INPUT_Y]!! as ComparableValue
-
-        val z = x.compareTo(y).intValue() <= 0
-
         return mapOf(
-            IrLTENode.OUTPUT_Z to z.asRuntimeValue()
+            IrConstantNode.Companion.OUTPUT to node.constValue.asRuntimeValue()
         )
     }
 }

@@ -5,20 +5,18 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.std.runtime.executor
+package com.lovelycatv.relink.std.runtime.executor.sink
 
 import com.lovelycatv.relink.ir.PortLabel
-import com.lovelycatv.relink.std.ir.source.IrConstantNode
-import com.lovelycatv.relink.std.runtime.asRuntimeValue
+import com.lovelycatv.relink.std.ir.sink.IrExitNode
+import com.lovelycatv.relink.std.runtime.executor.NodeExecutor
 import com.lovelycatv.relink.std.runtime.type.RuntimeValue
 
-object ConstExecutor : NodeExecutor<IrConstantNode> {
+object ExitExecutor : NodeExecutor<IrExitNode> {
     override suspend fun execute(
-        node: IrConstantNode,
+        node: IrExitNode,
         inputs: Map<PortLabel, RuntimeValue>
     ): Map<PortLabel, RuntimeValue> {
-        return mapOf(
-            IrConstantNode.OUTPUT to node.constValue.asRuntimeValue()
-        )
+        return inputs
     }
 }

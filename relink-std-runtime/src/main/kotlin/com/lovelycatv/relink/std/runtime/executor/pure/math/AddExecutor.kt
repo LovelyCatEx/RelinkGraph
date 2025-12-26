@@ -5,10 +5,10 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.std.runtime.executor.math
+package com.lovelycatv.relink.std.runtime.executor.pure.math
 
 import com.lovelycatv.relink.ir.PortLabel
-import com.lovelycatv.relink.std.ir.pure.IrAddNode
+import com.lovelycatv.relink.std.ir.pure.math.IrAddNode
 import com.lovelycatv.relink.ir.type.*
 import com.lovelycatv.relink.std.runtime.*
 import com.lovelycatv.relink.std.runtime.executor.NodeExecutor

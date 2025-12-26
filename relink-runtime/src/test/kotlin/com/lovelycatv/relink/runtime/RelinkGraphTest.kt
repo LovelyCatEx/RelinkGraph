@@ -10,10 +10,10 @@ package com.lovelycatv.relink.runtime
 import com.lovelycatv.relink.runtime.graph.RelinkGraph
 import com.lovelycatv.relink.ir.IrRelinkGraph
 import com.lovelycatv.relink.std.ir.control.IrIfNode
-import com.lovelycatv.relink.std.ir.pure.IrAddNode
-import com.lovelycatv.relink.std.ir.pure.IrComparatorNode
-import com.lovelycatv.relink.std.ir.pure.IrGTNode
-import com.lovelycatv.relink.std.ir.pure.IrMulNode
+import com.lovelycatv.relink.std.ir.pure.math.IrAddNode
+import com.lovelycatv.relink.std.ir.pure.comparator.IrComparatorNode
+import com.lovelycatv.relink.std.ir.pure.comparator.IrGTNode
+import com.lovelycatv.relink.std.ir.pure.math.IrMulNode
 import com.lovelycatv.relink.std.ir.sink.IrExitNode
 import com.lovelycatv.relink.std.ir.source.IrConstantNode
 import com.lovelycatv.relink.std.ir.source.IrEntryNode

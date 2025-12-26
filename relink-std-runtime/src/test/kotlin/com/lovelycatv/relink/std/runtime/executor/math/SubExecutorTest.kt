@@ -7,8 +7,9 @@
  */
 package com.lovelycatv.relink.std.runtime.executor.math
 
-import com.lovelycatv.relink.std.ir.pure.IrSubNode
+import com.lovelycatv.relink.std.ir.pure.math.IrSubNode
 import com.lovelycatv.relink.ir.type.RInt
+import com.lovelycatv.relink.std.runtime.executor.pure.math.SubExecutor
 import com.lovelycatv.relink.std.runtime.intValue
 import com.lovelycatv.relink.std.runtime.type.IntValue
 import kotlinx.coroutines.runBlocking

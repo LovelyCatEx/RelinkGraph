@@ -5,26 +5,28 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.std.runtime.executor.comparator
+package com.lovelycatv.relink.std.runtime.executor.pure.comparator
 
 import com.lovelycatv.relink.ir.PortLabel
-import com.lovelycatv.relink.std.ir.pure.IrComparatorNode
+import com.lovelycatv.relink.std.ir.pure.comparator.IrEQNode
+import com.lovelycatv.relink.std.runtime.asRuntimeValue
 import com.lovelycatv.relink.std.runtime.executor.NodeExecutor
+import com.lovelycatv.relink.std.runtime.intValue
 import com.lovelycatv.relink.std.runtime.type.ComparableValue
 import com.lovelycatv.relink.std.runtime.type.RuntimeValue
 
-object ComparatorExecutor : NodeExecutor<IrComparatorNode> {
+object EQExecutor : NodeExecutor<IrEQNode> {
     override suspend fun execute(
-        node: IrComparatorNode,
+        node: IrEQNode,
         inputs: Map<PortLabel, RuntimeValue>
     ): Map<PortLabel, RuntimeValue> {
-        val x = inputs[IrComparatorNode.INPUT_X]!! as ComparableValue
-        val y = inputs[IrComparatorNode.INPUT_Y]!! as ComparableValue
+        val x = inputs[IrEQNode.INPUT_X]!! as ComparableValue
+        val y = inputs[IrEQNode.INPUT_Y]!! as ComparableValue
 
-        val z = x.compareTo(y)
+        val z = x.compareTo(y).intValue() == 0
 
         return mapOf(
-            IrComparatorNode.OUTPUT_Z to z
+            IrEQNode.OUTPUT_Z to z.asRuntimeValue()
         )
     }
 }

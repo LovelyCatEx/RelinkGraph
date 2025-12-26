@@ -5,25 +5,26 @@
  * that can be found in the LICENSE file.
  *
  */
-package com.lovelycatv.relink.std.ir.pure
+package com.lovelycatv.relink.std.ir.pure.comparator
 
 import com.lovelycatv.relink.ir.NodeId
 import com.lovelycatv.relink.std.ir.StdNodeType
-import com.lovelycatv.relink.ir.type.RNumber
+import com.lovelycatv.relink.ir.type.RBoolean
+import com.lovelycatv.relink.ir.type.RComparable
 import com.lovelycatv.relink.ir.workflow.node.IrPureNode
 import com.lovelycatv.relink.ir.workflow.node.port.ParamPort
 
-class IrAddNode(
+class IrEQNode(
     nodeId: NodeId,
-    val operandType: RNumber
+    val operandType: RComparable
 ) : IrPureNode(
     nodeId,
-    StdNodeType.ADD,
+    StdNodeType.EQ,
     listOf(
         ParamPort(operandType, INPUT_X),
         ParamPort(operandType, INPUT_Y)
     ),
-    listOf(ParamPort(operandType, OUTPUT_Z))
+    listOf(ParamPort(RBoolean, OUTPUT_Z))
 ) {
     companion object {
         const val INPUT_X = "x"
